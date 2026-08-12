@@ -24,7 +24,7 @@ Infrastructure is defined as CDK templates. The stack is expected to provision A
 pnpm install
 
 # Deploy with CDK (after implementation)
-pnpm --filter passkey-demo cdk deploy
+pnpm --filter passkey-oidc-auth cdk deploy
 ```
 
 

@@ -1,8 +1,12 @@
 {
-	"name": "passkey-demo",
+	"name": "passkey-oidc-auth",
 	"version": "0.1.0",
 	"private": true,
+	"type": "module",
 	"scripts": {
+		"dev": "tsx watch apps/local-server/src/server.ts",
+		"start:local": "tsx apps/local-server/src/server.ts",
+		"typecheck": "tsc -p tsconfig.json --noEmit",
 		"lint": "biome check",
 		"format": "biome format --write"
 	},
@@ -12,8 +16,10 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.4",
-		"@tailwindcss/postcss": "^4",
-		"@types/node": "^20"
+		"@types/koa": "^2.15.0",
+		"@types/node": "^20",
+		"tsx": "^4.20.5",
+		"typescript": "^5"
 	},
 	"packageManager": "pnpm@10.34.5"
 }
