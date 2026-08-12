@@ -18,6 +18,7 @@
 		"@biomejs/biome": "^2.2.4",
 		"@types/koa": "^2.15.0",
 		"@types/node": "^20",
+		"oidc-provider": "^9.11.3",
 		"tsx": "^4.20.5",
 		"typescript": "^5"
 	},
