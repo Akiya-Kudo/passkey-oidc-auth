@@ -7,7 +7,6 @@ export async function createProvider(): Promise<Provider> {
 	const clients = oidcConfig.clients;
 
 	const deps = createRuntimeDeps();
-
 	const { config, adapter, keyStore, userRepository } = deps;
 	const { issuer, cookieKeys } = config;
 

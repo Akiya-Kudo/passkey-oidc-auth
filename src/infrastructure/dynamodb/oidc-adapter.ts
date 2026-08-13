@@ -1,7 +1,4 @@
-import {
-	DynamoDBClient,
-	type DynamoDBClientConfig,
-} from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
 	DeleteCommand,
 	DynamoDBDocumentClient,
@@ -10,7 +7,8 @@ import {
 	QueryCommand,
 	UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
-import type { Adapter, AdapterFactory, AdapterPayload } from "oidc-provider";
+import type { Adapter, AdapterPayload } from "oidc-provider";
+import type { DynamoOidcAdapterOptions } from "./factory.js";
 
 const GRANTABLE = new Set([
 	"AccessToken",
@@ -20,12 +18,6 @@ const GRANTABLE = new Set([
 	"BackchannelAuthenticationRequest",
 	"PreAuthorizedCode",
 ]);
-
-export type DynamoOidcAdapterOptions = {
-	tableName: string;
-	client?: DynamoDBDocumentClient;
-	clientConfig?: DynamoDBClientConfig;
-};
 
 type StoredItem = {
 	pk: string;
@@ -39,18 +31,6 @@ type StoredItem = {
 	uid?: string;
 };
 
-/**
- * node-oidc-provider 用 DynamoDB Adapter（シングルテーブル）
- *
- * pk: `${model}:${id}`
- * sk: `OIDC`
- * GSI1: grantId（revokeByGrantId）
- * GSI2: uid（Session）
- * GSI3: userCode（DeviceCode 等）
- * TTL: expiresAt（epoch seconds）
- *
- * TODO: User / Credential とテーブルを分ける場合は tableName を分離する
- */
 export class DynamoOidcAdapter implements Adapter {
 	readonly #name: string;
 	readonly #tableName: string;
@@ -59,14 +39,12 @@ export class DynamoOidcAdapter implements Adapter {
 	constructor(name: string, options: DynamoOidcAdapterOptions) {
 		this.#name = name;
 		this.#tableName = options.tableName;
-		this.#doc =
-			options.client ??
-			DynamoDBDocumentClient.from(
-				new DynamoDBClient(options.clientConfig ?? {}),
-				{
-					marshallOptions: { removeUndefinedValues: true },
-				},
-			);
+		this.#doc = DynamoDBDocumentClient.from(
+			new DynamoDBClient(options.clientConfig ?? {}),
+			{
+				marshallOptions: { removeUndefinedValues: true },
+			},
+		);
 	}
 
 	#pk(id: string) {
@@ -206,10 +184,4 @@ export class DynamoOidcAdapter implements Adapter {
 			}),
 		);
 	}
-}
-
-export function createDynamoOidcAdapterFactory(
-	options: DynamoOidcAdapterOptions,
-): AdapterFactory {
-	return (name: string) => new DynamoOidcAdapter(name, options);
 }

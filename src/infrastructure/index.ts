@@ -1,9 +1,9 @@
-import type { DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
 import type { AdapterFactory } from "oidc-provider";
 import type { KeyStore, UserRepository } from "@/domain/ports.js";
 import { EnvJwksKeyStore, InMemoryKeyStore } from "./aws/key-store.js";
 import { KmsKeyStore } from "./aws/kms-key-store.js";
-import { createDynamoOidcAdapterFactory } from "./dynamodb/oidc-adapter.js";
+import { createDynamoDBClientConfig } from "./dynamodb/config.js";
+import { createDynamoOidcAdapterFactory } from "./dynamodb/factory.js";
 import { DynamoUserRepository } from "./dynamodb/user-repository.js";
 import { type AppEnvs, Environments } from "./env.js";
 
@@ -14,32 +14,20 @@ export type RuntimeDeps = {
 	userRepository?: UserRepository;
 };
 
-function dynamoClientConfig(config: AppEnvs): DynamoDBClientConfig {
-	if (!config.dynamodbEndpoint) {
-		// デプロイ時
-		return { region: config.awsRegion };
-	}
-
-	// ローカル開発時
-	return {
-		region: config.awsRegion,
-		endpoint: config.dynamodbEndpoint,
-		credentials: {
-			accessKeyId: "local",
-			secretAccessKey: "local",
-		},
-	};
-}
-
 export function createRuntimeDeps(): RuntimeDeps {
-	const clientConfig = dynamoClientConfig(Environments);
+	const dynamoConfig = createDynamoDBClientConfig({
+		endpoint: Environments.dynamodbEndpoint,
+		region: Environments.awsRegion,
+	});
+	const adapter = createDynamoOidcAdapterFactory({
+		tableName: Environments.oidcTableName,
+		clientConfig: dynamoConfig,
+	});
 
-	const adapter = Environments.oidcTableName
-		? createDynamoOidcAdapterFactory({
-				tableName: Environments.oidcTableName,
-				clientConfig,
-			})
-		: undefined;
+	const userRepository = new DynamoUserRepository({
+		tableName: Environments.oidcTableName,
+		clientConfig: dynamoConfig,
+	});
 
 	let keyStore: KeyStore;
 	if (Environments.jwksJson) {
@@ -51,13 +39,6 @@ export function createRuntimeDeps(): RuntimeDeps {
 	} else {
 		keyStore = new InMemoryKeyStore();
 	}
-
-	const userRepository = Environments.oidcTableName
-		? new DynamoUserRepository({
-				tableName: Environments.oidcTableName,
-				clientConfig,
-			})
-		: undefined;
 
 	return {
 		config: Environments,
