@@ -1,66 +1,15 @@
-import {
-	type AdapterFactory,
-	type Configuration,
-	type FindAccount,
-	Provider,
-} from "oidc-provider";
-import type { KeyStore, UserRepository } from "@/domain/ports.js";
-import { getStaticClients } from "./clients.js";
-import { OidcRoutes } from "./routes.js";
+import { type Configuration, Provider } from "oidc-provider";
+import { createRuntimeDeps } from "@/infrastructure/index.js";
+import { createFindAccount } from "./config/find-account.js";
+import { oidcConfig } from "./config.js";
 
-export type CreateProviderOptions = {
-	issuer: string;
-	/** 未指定時は oidc-provider 内蔵 MemoryAdapter（ローカル専用） */
-	adapter?: AdapterFactory;
-	keyStore?: KeyStore;
-	userRepository?: UserRepository;
-	/** cookie 署名鍵。TODO: Secrets Manager / SSM から注入 */
-	cookieKeys?: string[];
-	clients?: Configuration["clients"];
-};
+export async function createProvider(): Promise<Provider> {
+	const clients = oidcConfig.clients;
 
-async function createFindAccount(
-	userRepository?: UserRepository,
-): Promise<FindAccount> {
-	return async (_ctx, id) => {
-		if (userRepository) {
-			const user = await userRepository.findById(id);
-			if (!user) {
-				return undefined;
-			}
-			return {
-				accountId: user.id,
-				async claims() {
-					return {
-						sub: user.id,
-						...(user.email ? { email: user.email } : {}),
-						...(user.displayName ? { name: user.displayName } : {}),
-					};
-				},
-			};
-		}
+	const deps = createRuntimeDeps();
 
-		// TODO: UserRepository 必須化。現状は学習用に accountId のみ返す
-		return {
-			accountId: id,
-			async claims() {
-				return { sub: id };
-			},
-		};
-	};
-}
-
-export async function createProvider(
-	options: CreateProviderOptions,
-): Promise<Provider> {
-	const {
-		issuer,
-		adapter,
-		keyStore,
-		userRepository,
-		cookieKeys = (process.env.COOKIE_KEYS ?? "local-dev-cookie-key").split(","),
-		clients = getStaticClients(),
-	} = options;
+	const { config, adapter, keyStore, userRepository } = deps;
+	const { issuer, cookieKeys } = config;
 
 	const configuration: Configuration = {
 		clients,
@@ -72,13 +21,13 @@ export async function createProvider(
 			introspection: { enabled: true },
 		},
 		routes: {
-			authorization: OidcRoutes.authorization,
-			token: OidcRoutes.token,
-			userinfo: OidcRoutes.userinfo,
-			jwks: OidcRoutes.jwks,
-			revocation: OidcRoutes.revocation,
-			introspection: OidcRoutes.introspection,
-			end_session: OidcRoutes.endSession,
+			authorization: oidcConfig.routes.authorization,
+			token: oidcConfig.routes.token,
+			userinfo: oidcConfig.routes.userinfo,
+			jwks: oidcConfig.routes.jwks,
+			revocation: oidcConfig.routes.revocation,
+			introspection: oidcConfig.routes.introspection,
+			end_session: oidcConfig.routes.endSession,
 		},
 		cookies: {
 			keys: cookieKeys,

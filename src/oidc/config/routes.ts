@@ -9,5 +9,3 @@ export const OidcRoutes = {
 	interaction: "/interaction",
 	discovery: "/.well-known/openid-configuration",
 } as const;
-
-export type OidcRouteName = keyof typeof OidcRoutes;

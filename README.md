@@ -21,7 +21,7 @@ It exposes API Gateway endpoints and a login page so client apps can authenticat
 pnpm install
 
 # Issuer をデプロイ後の API URL に合わせる（初回は例の invalid のまま synth 可）
-export CDK_OIDC_ISSUER=https://xxxx.execute-api.ap-northeast-1.amazonaws.com
+export ISSUER=https://xxxx.execute-api.ap-northeast-1.amazonaws.com
 pnpm cdk:deploy
 ```
 

@@ -25,7 +25,7 @@ docker compose up -d
 ## Deploy
 
 ```bash
-# TODO: CDK_OIDC_ISSUER / COOKIE_KEYS / JWKS を設定してから
+# TODO: ISSUER / COOKIE_KEYS / JWKS を設定してから
 pnpm cdk:deploy
 ```
 

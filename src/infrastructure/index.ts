@@ -1,79 +1,69 @@
+import type { DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
 import type { AdapterFactory } from "oidc-provider";
 import type { KeyStore, UserRepository } from "@/domain/ports.js";
 import { EnvJwksKeyStore, InMemoryKeyStore } from "./aws/key-store.js";
 import { KmsKeyStore } from "./aws/kms-key-store.js";
-import { type AppConfig, loadConfig } from "./config.js";
 import { createDynamoOidcAdapterFactory } from "./dynamodb/oidc-adapter.js";
 import { DynamoUserRepository } from "./dynamodb/user-repository.js";
+import { type AppEnvs, Environments } from "./env.js";
 
 export type RuntimeDeps = {
-	config: AppConfig;
+	config: AppEnvs;
 	adapter?: AdapterFactory;
 	keyStore: KeyStore;
 	userRepository?: UserRepository;
 };
 
-/**
- * 環境変数から Adapter / KeyStore / Repository を組み立てる
- */
-export function createRuntimeDeps(
-	env: NodeJS.ProcessEnv = process.env,
-): RuntimeDeps {
-	const config = loadConfig(env);
+function dynamoClientConfig(config: AppEnvs): DynamoDBClientConfig {
+	if (!config.dynamodbEndpoint) {
+		// デプロイ時
+		return { region: config.awsRegion };
+	}
 
-	const clientConfig = {
+	// ローカル開発時
+	return {
 		region: config.awsRegion,
-		...(config.dynamodbEndpoint
-			? {
-					endpoint: config.dynamodbEndpoint,
-					// DynamoDB Local 用ダミー資格情報
-					credentials: {
-						accessKeyId: env.AWS_ACCESS_KEY_ID ?? "local",
-						secretAccessKey: env.AWS_SECRET_ACCESS_KEY ?? "local",
-					},
-				}
-			: {}),
+		endpoint: config.dynamodbEndpoint,
+		credentials: {
+			accessKeyId: "local",
+			secretAccessKey: "local",
+		},
 	};
+}
 
-	const adapter = config.oidcTableName
+export function createRuntimeDeps(): RuntimeDeps {
+	const environmens = Environments;
+	const clientConfig = dynamoClientConfig(environmens);
+
+	const adapter = environmens.oidcTableName
 		? createDynamoOidcAdapterFactory({
-				tableName: config.oidcTableName,
+				tableName: environmens.oidcTableName,
 				clientConfig,
 			})
 		: undefined;
 
 	let keyStore: KeyStore;
-	if (env.JWKS_JSON) {
+	if (process.env.JWKS_JSON) {
 		keyStore = new EnvJwksKeyStore();
-	} else if (config.jwksSecretArn) {
+	} else if (environmens.jwksSecretArn) {
 		// TODO: Secrets Manager から JWKS を取得する実装に置き換える
 		// 現状はプレースホルダとして KmsKeyStore を立てて明示的に失敗させる
-		keyStore = new KmsKeyStore(config.jwksSecretArn);
+		keyStore = new KmsKeyStore(environmens.jwksSecretArn);
 	} else {
 		keyStore = new InMemoryKeyStore();
 	}
 
-	const userRepository = config.oidcTableName
+	const userRepository = environmens.oidcTableName
 		? new DynamoUserRepository({
-				tableName: config.oidcTableName,
+				tableName: environmens.oidcTableName,
 				clientConfig,
 			})
 		: undefined;
 
 	return {
-		config,
+		config: environmens,
 		adapter,
 		keyStore,
 		userRepository,
 	};
 }
-
-export { EnvJwksKeyStore, InMemoryKeyStore } from "./aws/key-store.js";
-export { KmsKeyStore } from "./aws/kms-key-store.js";
-export { type AppConfig, loadConfig } from "./config.js";
-export { DynamoClientRepository } from "./dynamodb/client-repository.js";
-export {
-	createDynamoOidcAdapterFactory,
-	DynamoOidcAdapter,
-} from "./dynamodb/oidc-adapter.js";
-export { DynamoUserRepository } from "./dynamodb/user-repository.js";

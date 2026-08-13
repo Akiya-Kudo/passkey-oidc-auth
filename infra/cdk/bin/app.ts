@@ -11,5 +11,5 @@ new IdpStack(app, "PasskeyOidcIdpStack", {
 		region: process.env.CDK_DEFAULT_REGION ?? "ap-northeast-1",
 	},
 	// TODO: カスタムドメイン導入後に issuer を固定値で渡す
-	issuer: process.env.CDK_OIDC_ISSUER,
+	issuer: process.env.ISSUER,
 });

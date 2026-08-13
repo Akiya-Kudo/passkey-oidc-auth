@@ -57,12 +57,7 @@ export class IdpStack extends cdk.Stack {
 		// TODO: Users / Credentials 用テーブルを分離する場合はここに追加
 		// TODO: JWKS 用 Secrets Manager Secret を作成し Lambda に読み取り権限を付与
 
-		const issuer =
-			props.issuer ??
-			// デプロイ後に API endpoint を ISSUER にする場合のプレースホルダ
-			// 実 URL は outputs の HttpApiUrl を見て Parameter/Env を更新する
-			process.env.CDK_OIDC_ISSUER ??
-			"https://example.invalid";
+		const issuer = props.issuer;
 
 		const oidcFn = new NodejsFunction(this, "OidcFn", {
 			entry: path.join(repoRoot, "apps/lambdas/src/handler.ts"),
@@ -71,7 +66,7 @@ export class IdpStack extends cdk.Stack {
 			memorySize: 512,
 			timeout: cdk.Duration.seconds(29),
 			environment: {
-				ISSUER: issuer,
+				ISSUER: issuer ?? "",
 				OIDC_TABLE_NAME: oidcTable.tableName,
 				OIDC_TRUST_PROXY: "true",
 				// TODO: COOKIE_KEYS / JWKS_JSON / JWKS_SECRET_ARN を Secrets から注入
@@ -127,7 +122,7 @@ export class IdpStack extends cdk.Stack {
 			value: oidcTable.tableName,
 		});
 		new cdk.CfnOutput(this, "ConfiguredIssuer", {
-			value: issuer,
+			value: issuer ?? "",
 		});
 	}
 }

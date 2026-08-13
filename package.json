@@ -9,6 +9,7 @@
 		"typecheck": "tsc -p tsconfig.json --noEmit",
 		"lint": "biome check src apps infra/cdk/lib infra/cdk/bin scripts utils biome.json",
 		"format": "biome format --write src apps infra/cdk/lib infra/cdk/bin scripts utils biome.json",
+		"ts:check": "tsc --noEmit",
 		"tables:local": "tsx scripts/create-local-tables.ts",
 		"cdk": "pnpm --filter @passkey-oidc-auth/cdk",
 		"cdk:synth": "pnpm --filter @passkey-oidc-auth/cdk synth",

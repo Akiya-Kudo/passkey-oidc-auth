@@ -1,18 +1,10 @@
 import { createOidcApp } from "@/http/koa.js";
-
-const port = parsePort(process.env.LOCAL_PORT);
+import { Environments } from "@/infrastructure/env.js";
 
 const { app } = await createOidcApp();
 const issuer =
-	process.env.ISSUER ?? process.env.OIDC_ISSUER ?? `http://localhost:${port}`;
+	process.env.ISSUER ?? `http://localhost:${Environments.localPort}`;
 
-app.listen(port, () => {
+app.listen(Environments.localPort, () => {
 	console.log(`Server is running on ${issuer}`);
 });
-
-function parsePort(value: string | undefined): number {
-	if (value && Number.isSafeInteger(Number(value))) {
-		return Number(value);
-	}
-	throw new Error(`Invalid LOCAL_PORT environment variable: ${value}`);
-}
