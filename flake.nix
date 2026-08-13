@@ -15,6 +15,7 @@
           packages = with pkgs; [
             nodejs_22
             pnpm_10
+            awscli2
           ];
         };
       }

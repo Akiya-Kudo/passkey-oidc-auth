@@ -12,7 +12,7 @@
 		"tables:local": "tsx scripts/create-local-tables.ts",
 		"cdk": "pnpm --filter @passkey-oidc-auth/cdk",
 		"cdk:synth": "pnpm --filter @passkey-oidc-auth/cdk synth",
-		"cdk:deploy": "pnpm --filter @passkey-oidc-auth/cdk deploy"
+		"cdk:deploy": "pnpm --filter @passkey-oidc-auth/cdk run deploy"
 	},
 	"dependencies": {
 		"@aws-sdk/client-dynamodb": "^3.901.0",
