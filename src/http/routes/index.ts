@@ -5,9 +5,7 @@ import { registerInteractionRoutes } from "./interaction.js";
 
 export function createAppRouter(provider: Provider) {
 	const router = new Router();
-
 	registerHealthRoutes(router);
 	registerInteractionRoutes(router, provider);
-
 	return router;
 }

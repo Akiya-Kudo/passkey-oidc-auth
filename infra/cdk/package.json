@@ -1,0 +1,23 @@
+{
+	"name": "@passkey-oidc-auth/cdk",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"synth": "cdk synth",
+		"diff": "cdk diff",
+		"deploy": "cdk deploy",
+		"typecheck": "tsc -p tsconfig.json --noEmit"
+	},
+	"dependencies": {
+		"aws-cdk-lib": "^2.213.0",
+		"constructs": "^10.4.2"
+	},
+	"devDependencies": {
+		"@types/node": "^20",
+		"aws-cdk": "^2.1135.1",
+		"esbuild": "^0.25.9",
+		"tsx": "^4.20.5",
+		"typescript": "^5"
+	}
+}

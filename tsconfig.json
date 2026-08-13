@@ -3,6 +3,6 @@
 	"compilerOptions": {
 		"noEmit": true
 	},
-	"include": ["apps/**/*", "packages/**/*", "scripts/**/*", "utils/**/*"],
-	"exclude": ["node_modules", "**/dist"]
+	"include": ["src/**/*", "apps/**/*", "scripts/**/*", "utils/**/*"],
+	"exclude": ["node_modules", "**/dist", "**/cdk.out"]
 }

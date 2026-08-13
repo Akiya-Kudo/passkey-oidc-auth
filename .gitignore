@@ -19,6 +19,8 @@ node_modules
 
 # production
 /build
+**/cdk.out
+**/dist
 
 # misc
 .DS_Store

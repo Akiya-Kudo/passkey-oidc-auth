@@ -7,21 +7,30 @@
 		"dev": "tsx watch --env-file .env apps/local-server/src/server.ts",
 		"start:local": "tsx --env-file .env apps/local-server/src/server.ts",
 		"typecheck": "tsc -p tsconfig.json --noEmit",
-		"lint": "biome check",
-		"format": "biome format --write"
+		"lint": "biome check src apps infra/cdk/lib infra/cdk/bin scripts utils biome.json",
+		"format": "biome format --write src apps infra/cdk/lib infra/cdk/bin scripts utils biome.json",
+		"tables:local": "tsx scripts/create-local-tables.ts",
+		"cdk": "pnpm --filter @passkey-oidc-auth/cdk",
+		"cdk:synth": "pnpm --filter @passkey-oidc-auth/cdk synth",
+		"cdk:deploy": "pnpm --filter @passkey-oidc-auth/cdk deploy"
 	},
 	"dependencies": {
-		"oidc-provider": "^9.11.3"
+		"@aws-sdk/client-dynamodb": "^3.901.0",
+		"@aws-sdk/lib-dynamodb": "^3.901.0",
+		"@koa/router": "^15.7.0",
+		"jose": "^6.2.8",
+		"koa": "^3.2.1",
+		"koa-mount": "^4.2.0",
+		"oidc-provider": "^9.11.3",
+		"serverless-http": "^3.2.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.4",
-		"@koa/router": "^15.7.0",
+		"@types/aws-lambda": "^8.10.152",
 		"@types/koa": "^2.15.0",
 		"@types/koa-mount": "^4.0.5",
+		"@types/koa__router": "^12.0.4",
 		"@types/node": "^20",
-		"aws-cdk": "^2.1135.1",
-		"koa": "^3.2.1",
-		"koa-mount": "^4.2.0",
 		"tsx": "^4.20.5",
 		"typescript": "^5"
 	},

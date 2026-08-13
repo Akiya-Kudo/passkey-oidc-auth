@@ -3,70 +3,60 @@
 **柔軟に変更する。差分が生じている場合には実際のrepository構成を正としてこのファイルの定義を修正する**
 
 ```
-idp/
+passkey-oidc-auth/
 ├─ apps/
-│  ├─ local-server/                 # ローカル専用: Koaで全ルートを公開
+│  ├─ local-server/                 # ローカル専用入口（listen のみ）
 │  │  └─ src/
 │  │     └─ server.ts
 │  │
-│  └─ lambdas/                      # 本番専用: Lambda入口（薄く保つ）
+│  └─ lambdas/                      # Lambda 入口（薄く保つ）
 │     └─ src/
+│        ├─ shared.ts
 │        ├─ authorization.ts        # /authorize, /interaction/*
 │        ├─ token.ts                # /token, /userinfo, /revocation
 │        └─ metadata.ts             # /.well-known/*, /jwks
 │
-├─ packages/
-│  ├─ oidc/                         # IdPの中核
-│  │  └─ src/
-│  │     ├─ provider.ts             # Provider生成・共通設定
-│  │     ├─ interactions.ts         # login / consent
-│  │     ├─ clients.ts              # OIDC Client登録・検証
-│  │     ├─ keys.ts                 # JWKS署名鍵の取得インターフェース
-│  │     └─ routes.ts               # endpoint群と用途の定義
-│  │
-│  ├─ application/                  # ユースケース
-│  │  └─ src/
-│  │     ├─ authenticate-user.ts
-│  │     ├─ register-client.ts
-│  │     └─ manage-session.ts
-│  │
-│  ├─ domain/                       # AWSやHTTPに依存しない型・ルール
-│  │  └─ src/
-│  │     ├─ user.ts
-│  │     ├─ client.ts
-│  │     └─ ports.ts                # UserRepository / OidcAdapter等のIF
-│  │
-│  ├─ infrastructure/               # 実装差し替え箇所
-│  │  └─ src/
-│  │     ├─ dynamodb/
-│  │     │  ├─ oidc-adapter.ts      # node-oidc-provider Adapter
-│  │     │  ├─ user-repository.ts
-│  │     │  └─ client-repository.ts
-│  │     ├─ aws/
-│  │     │  └─ kms-key-store.ts
-│  │     └─ config.ts
-│  │
-│  └─ http/                         # HTTPフレームワーク境界
-│     └─ src/
-│        ├─ koa.ts                  # Koaへのマウント
-│        └─ apigateway.ts           # API Gateway v2 → Node HTTP変換
+├─ src/                             # 共有ロジック（ディレクトリ境界のみ）
+│  ├─ oidc/
+│  │  ├─ provider.ts
+│  │  ├─ interactions.ts
+│  │  ├─ clients.ts
+│  │  ├─ keys.ts
+│  │  └─ routes.ts
+│  ├─ domain/
+│  │  ├─ user.ts
+│  │  ├─ client.ts
+│  │  └─ ports.ts
+│  ├─ infrastructure/
+│  │  ├─ dynamodb/
+│  │  │  ├─ oidc-adapter.ts
+│  │  │  ├─ user-repository.ts
+│  │  │  └─ client-repository.ts
+│  │  ├─ aws/
+│  │  │  ├─ key-store.ts
+│  │  │  └─ kms-key-store.ts
+│  │  └─ config.ts
+│  ├─ http/
+│  │  ├─ koa.ts
+│  │  ├─ apigateway.ts
+│  │  └─ routes/
+│  └─ types/
+│     └─ oidc-provider.d.ts
 │
 ├─ infra/
-│  └─ cdk/
+│  └─ cdk/                          # ★ 唯一の別 package.json
 │     ├─ bin/
+│     │  └─ app.ts
 │     └─ lib/
-│        ├─ idp-stack.ts            # HTTP API, Lambda, DynamoDB, IAM
-│        └─ routes.ts               # API Gatewayルーティング定義
+│        ├─ idp.ts
+│        └─ routes.ts
 │
-├─ docker-compose.yml                # DynamoDB Local
+├─ docker-compose.yml
 ├─ scripts/
-│  ├─ create-local-tables.ts
-│  └─ seed-local.ts
-├─ tests/
-│  ├─ unit/
-│  ├─ integration/                  # DynamoDB Localを利用
-│  └─ e2e/                          # Playwright: login/redirect/cookie
+│  └─ create-local-tables.ts
 ├─ package.json
-├─ pnpm-workspace.yaml
+├─ pnpm-workspace.yaml              # infra/cdk のみ
 └─ tsconfig.base.json
 ```
+
+方針: 論理分割は `src/` のディレクトリ。npm パッケージ境界は root + CDK のみ。

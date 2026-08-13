@@ -17,15 +17,15 @@ It exposes API Gateway endpoints and a login page so client apps can authenticat
 
 ## Deploy
 
-Infrastructure is defined as CDK templates. The stack is expected to provision API Gateway, Lambda, DynamoDB, and resources for serving the login page.
-
 ```bash
-# Install dependencies (from the monorepo root)
 pnpm install
 
-# Deploy with CDK (after implementation)
-pnpm --filter passkey-oidc-auth cdk deploy
+# Issuer をデプロイ後の API URL に合わせる（初回は例の invalid のまま synth 可）
+export CDK_OIDC_ISSUER=https://xxxx.execute-api.ap-northeast-1.amazonaws.com
+pnpm cdk:deploy
 ```
+
+主な TODO（Secrets / カスタムドメイン / Passkey UI 等）はコード内コメントを参照。
 
 
 
