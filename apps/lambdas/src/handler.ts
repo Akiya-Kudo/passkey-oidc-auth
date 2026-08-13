@@ -2,8 +2,8 @@ import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { createApiGatewayHandler, createOidcApp } from "@/http/index.js";
 
 /**
- * Lambda 共通: Koa + oidc-provider アプリを生成して API Gateway に橋渡しする。
- * ルート分割は API Gateway 側で行い、各 Lambda は同一アプリを載せる。
+ * API Gateway HTTP API → Koa + oidc-provider。
+ * ルーティングは Koa / oidc-provider 側で行う。
  */
 export const handler: APIGatewayProxyHandlerV2 = createApiGatewayHandler(
 	async () => {

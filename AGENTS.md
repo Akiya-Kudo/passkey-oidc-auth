@@ -7,7 +7,7 @@
 - `src/infrastructure` — DynamoDB Adapter / KeyStore / config
 - `src/http` — Koa マウント + API Gateway(v2) → Koa（serverless-http）
 - `apps/local-server` — ローカル listen 入口
-- `apps/lambdas` — metadata / authorization / token 入口
+- `apps/lambdas` — API Gateway → Koa 入口（単一 Lambda）
 - `infra/cdk` — 唯一の別 package（HTTP API + Lambda + DynamoDB）
 
 npm パッケージ境界は **root + `infra/cdk` のみ**。論理分割は `src/` のディレクトリ。

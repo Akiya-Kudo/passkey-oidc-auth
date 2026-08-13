@@ -8,7 +8,6 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction, OutputFormat } from "aws-cdk-lib/aws-lambda-nodejs";
 import * as logs from "aws-cdk-lib/aws-logs";
 import type { Construct } from "constructs";
-import { httpRoutes, type LambdaKind } from "./routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,21 +57,6 @@ export class IdpStack extends cdk.Stack {
 		// TODO: Users / Credentials 用テーブルを分離する場合はここに追加
 		// TODO: JWKS 用 Secrets Manager Secret を作成し Lambda に読み取り権限を付与
 
-		const httpApi = new apigwv2.HttpApi(this, "IdpHttpApi", {
-			apiName: "passkey-oidc-idp",
-			corsPreflight: {
-				// TODO: 許可 Origin を Client の実 URL に絞る
-				allowHeaders: ["Content-Type", "Authorization", "Cookie"],
-				allowMethods: [
-					apigwv2.CorsHttpMethod.GET,
-					apigwv2.CorsHttpMethod.POST,
-					apigwv2.CorsHttpMethod.OPTIONS,
-				],
-				allowOrigins: ["*"],
-				allowCredentials: false,
-			},
-		});
-
 		const issuer =
 			props.issuer ??
 			// デプロイ後に API endpoint を ISSUER にする場合のプレースホルダ
@@ -80,78 +64,19 @@ export class IdpStack extends cdk.Stack {
 			process.env.CDK_OIDC_ISSUER ??
 			"https://example.invalid";
 
-		const commonEnv: Record<string, string> = {
-			ISSUER: issuer,
-			OIDC_TABLE_NAME: oidcTable.tableName,
-			OIDC_TRUST_PROXY: "true",
-			// TODO: COOKIE_KEYS / JWKS_JSON / JWKS_SECRET_ARN を Secrets から注入
-			COOKIE_KEYS: process.env.COOKIE_KEYS ?? "replace-me-in-prod",
-		};
-
-		const lambdas: Record<LambdaKind, NodejsFunction> = {
-			metadata: this.createLambda("MetadataFn", "metadata", commonEnv),
-			authorization: this.createLambda(
-				"AuthorizationFn",
-				"authorization",
-				commonEnv,
-			),
-			token: this.createLambda("TokenFn", "token", commonEnv),
-		};
-
-		for (const fn of Object.values(lambdas)) {
-			oidcTable.grantReadWriteData(fn);
-		}
-
-		const methodMap: Record<
-			(typeof httpRoutes)[number]["methods"][number],
-			apigwv2.HttpMethod
-		> = {
-			GET: apigwv2.HttpMethod.GET,
-			POST: apigwv2.HttpMethod.POST,
-			OPTIONS: apigwv2.HttpMethod.OPTIONS,
-		};
-
-		for (const route of httpRoutes) {
-			const fn = lambdas[route.lambda];
-			const integrationId = `${route.lambda}${route.path.replaceAll(/[^a-zA-Z0-9]/g, "-")}`;
-			const integration = new apigwIntegrations.HttpLambdaIntegration(
-				integrationId,
-				fn,
-			);
-
-			for (const method of route.methods) {
-				httpApi.addRoutes({
-					path: route.path,
-					methods: [methodMap[method]],
-					integration,
-				});
-			}
-		}
-
-		new cdk.CfnOutput(this, "HttpApiUrl", {
-			value: httpApi.apiEndpoint,
-			description: "API Gateway endpoint.",
-		});
-		new cdk.CfnOutput(this, "OidcTableName", {
-			value: oidcTable.tableName,
-		});
-		new cdk.CfnOutput(this, "ConfiguredIssuer", {
-			value: issuer,
-		});
-	}
-
-	private createLambda(
-		id: string,
-		entryName: LambdaKind,
-		environment: Record<string, string>,
-	): NodejsFunction {
-		return new NodejsFunction(this, id, {
-			entry: path.join(repoRoot, "apps/lambdas/src", `${entryName}.ts`),
+		const oidcFn = new NodejsFunction(this, "OidcFn", {
+			entry: path.join(repoRoot, "apps/lambdas/src/handler.ts"),
 			handler: "handler",
 			runtime: lambda.Runtime.NODEJS_20_X,
 			memorySize: 512,
 			timeout: cdk.Duration.seconds(29),
-			environment,
+			environment: {
+				ISSUER: issuer,
+				OIDC_TABLE_NAME: oidcTable.tableName,
+				OIDC_TRUST_PROXY: "true",
+				// TODO: COOKIE_KEYS / JWKS_JSON / JWKS_SECRET_ARN を Secrets から注入
+				COOKIE_KEYS: process.env.COOKIE_KEYS ?? "replace-me-in-prod",
+			},
 			logRetention: logs.RetentionDays.ONE_WEEK,
 			projectRoot: repoRoot,
 			depsLockFilePath: path.join(repoRoot, "pnpm-lock.yaml"),
@@ -171,6 +96,38 @@ export class IdpStack extends cdk.Stack {
 					"--alias": "@=./src",
 				},
 			},
+		});
+
+		oidcTable.grantReadWriteData(oidcFn);
+
+		const httpApi = new apigwv2.HttpApi(this, "IdpHttpApi", {
+			apiName: "passkey-oidc-idp",
+			defaultIntegration: new apigwIntegrations.HttpLambdaIntegration(
+				"OidcIntegration",
+				oidcFn,
+			),
+			corsPreflight: {
+				// TODO: 許可 Origin を Client の実 URL に絞る
+				allowHeaders: ["Content-Type", "Authorization", "Cookie"],
+				allowMethods: [
+					apigwv2.CorsHttpMethod.GET,
+					apigwv2.CorsHttpMethod.POST,
+					apigwv2.CorsHttpMethod.OPTIONS,
+				],
+				allowOrigins: ["*"],
+				allowCredentials: false,
+			},
+		});
+
+		new cdk.CfnOutput(this, "HttpApiUrl", {
+			value: httpApi.apiEndpoint,
+			description: "API Gateway endpoint.",
+		});
+		new cdk.CfnOutput(this, "OidcTableName", {
+			value: oidcTable.tableName,
+		});
+		new cdk.CfnOutput(this, "ConfiguredIssuer", {
+			value: issuer,
 		});
 	}
 }

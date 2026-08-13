@@ -11,10 +11,7 @@ passkey-oidc-auth/
 │  │
 │  └─ lambdas/                      # Lambda 入口（薄く保つ）
 │     └─ src/
-│        ├─ shared.ts
-│        ├─ authorization.ts        # /authorize, /interaction/*
-│        ├─ token.ts                # /token, /userinfo, /revocation
-│        └─ metadata.ts             # /.well-known/*, /jwks
+│        └─ handler.ts              # API Gateway → Koa 単一入口
 │
 ├─ src/                             # 共有ロジック（ディレクトリ境界のみ）
 │  ├─ oidc/
@@ -48,8 +45,7 @@ passkey-oidc-auth/
 │     ├─ bin/
 │     │  └─ app.ts
 │     └─ lib/
-│        ├─ idp.ts
-│        └─ routes.ts
+│        └─ idp.ts
 │
 ├─ docker-compose.yml
 ├─ scripts/

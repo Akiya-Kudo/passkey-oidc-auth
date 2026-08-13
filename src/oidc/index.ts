@@ -6,4 +6,4 @@ export {
 } from "./interactions.js";
 export type { KeyStore } from "./keys.js";
 export { type CreateProviderOptions, createProvider } from "./provider.js";
-export { LambdaRouteGroups, type OidcRouteName, OidcRoutes } from "./routes.js";
+export { type OidcRouteName, OidcRoutes } from "./routes.js";
