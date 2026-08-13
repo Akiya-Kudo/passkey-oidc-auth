@@ -1,6 +1,6 @@
 import { createOidcApp } from "@/http/koa.js";
 
-const port = parsePort(process.env.PORT);
+const port = parsePort(process.env.LOCAL_PORT);
 
 const { app } = await createOidcApp();
 const issuer =
@@ -14,5 +14,5 @@ function parsePort(value: string | undefined): number {
 	if (value && Number.isSafeInteger(Number(value))) {
 		return Number(value);
 	}
-	throw new Error(`Invalid PORT environment variable: ${value}`);
+	throw new Error(`Invalid LOCAL_PORT environment variable: ${value}`);
 }
