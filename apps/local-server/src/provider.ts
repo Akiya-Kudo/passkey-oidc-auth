@@ -12,5 +12,6 @@ export function createProvider(issuer: string) {
 		features: {
 			devInteractions: { enabled: false },
 		},
+		findAccount: async (ctx) => {},
 	});
 }

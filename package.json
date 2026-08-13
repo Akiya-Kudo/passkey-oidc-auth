@@ -11,7 +11,6 @@
 		"format": "biome format --write"
 	},
 	"dependencies": {
-		"aws-cdk": "^2.1135.1",
 		"oidc-provider": "^9.11.3"
 	},
 	"devDependencies": {
@@ -20,6 +19,7 @@
 		"@types/koa": "^2.15.0",
 		"@types/koa-mount": "^4.0.5",
 		"@types/node": "^20",
+		"aws-cdk": "^2.1135.1",
 		"koa": "^3.2.1",
 		"koa-mount": "^4.2.0",
 		"tsx": "^4.20.5",
