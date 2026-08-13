@@ -7,11 +7,8 @@ import {
 	GetCommand,
 	PutCommand,
 } from "@aws-sdk/lib-dynamodb";
-import type {
-	ClientRepository,
-	OAuthClient,
-	OAuthClientId,
-} from "../../domain/index.js";
+import type { OAuthClient, OAuthClientId } from "@/domain/client.js";
+import type { ClientRepository } from "@/domain/ports.js";
 
 export type DynamoClientRepositoryOptions = {
 	tableName: string;

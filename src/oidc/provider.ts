@@ -4,7 +4,7 @@ import {
 	type FindAccount,
 	Provider,
 } from "oidc-provider";
-import type { KeyStore, UserRepository } from "../domain/index.js";
+import type { KeyStore, UserRepository } from "@/domain/ports.js";
 import { getStaticClients } from "./clients.js";
 import { OidcRoutes } from "./routes.js";
 

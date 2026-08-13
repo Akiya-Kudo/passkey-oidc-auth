@@ -1,4 +1,4 @@
-import type { KeyStore } from "../../domain/index.js";
+import type { KeyStore } from "@/domain/ports.js";
 
 /**
  * TODO: AWS KMS で署名する KeyStore を実装する

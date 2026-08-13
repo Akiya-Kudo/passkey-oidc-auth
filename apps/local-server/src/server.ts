@@ -1,4 +1,14 @@
-import { createOidcApp } from "../../../src/http/index.js";
+import { createOidcApp } from "@/http/index.js";
+
+const port = parsePort(process.env.PORT);
+
+const { app } = await createOidcApp();
+const issuer =
+	process.env.ISSUER ?? process.env.OIDC_ISSUER ?? `http://localhost:${port}`;
+
+app.listen(port, () => {
+	console.log(`Server is running on ${issuer}`);
+});
 
 function parsePort(value: string | undefined): number {
 	if (value && Number.isSafeInteger(Number(value))) {
@@ -6,16 +16,3 @@ function parsePort(value: string | undefined): number {
 	}
 	throw new Error(`Invalid PORT environment variable: ${value}`);
 }
-
-const port = parsePort(process.env.PORT);
-// ローカル既定。本番は ISSUER を API Gateway のカスタムドメイン等に合わせる
-if (!process.env.ISSUER && !process.env.OIDC_ISSUER) {
-	process.env.ISSUER = `http://localhost:${port}`;
-}
-
-const { app } = await createOidcApp();
-const issuer = process.env.ISSUER ?? process.env.OIDC_ISSUER;
-
-app.listen(port, () => {
-	console.log(`Server is running on ${issuer}`);
-});

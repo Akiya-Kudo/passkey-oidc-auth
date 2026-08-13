@@ -1,5 +1,5 @@
 import { exportJWK, generateKeyPair } from "jose";
-import type { KeyStore } from "../../domain/index.js";
+import type { KeyStore } from "@/domain/ports.js";
 
 /**
  * 開発用: プロセス内で RSA 鍵を生成して保持する。

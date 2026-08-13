@@ -7,7 +7,8 @@ import {
 	GetCommand,
 	PutCommand,
 } from "@aws-sdk/lib-dynamodb";
-import type { User, UserId, UserRepository } from "../../domain/index.js";
+import type { UserRepository } from "@/domain/ports.js";
+import type { User, UserId } from "@/domain/user.js";
 
 export type DynamoUserRepositoryOptions = {
 	tableName: string;
@@ -15,9 +16,7 @@ export type DynamoUserRepositoryOptions = {
 	clientConfig?: DynamoDBClientConfig;
 };
 
-/**
- * TODO: Passkey Credential と同じテーブル設計に合わせて PK/SK を見直す
- */
+//  TODO: Passkey Credential と同じテーブル設計に合わせて PK/SK を見直す
 export class DynamoUserRepository implements UserRepository {
 	readonly #tableName: string;
 	readonly #doc: DynamoDBDocumentClient;

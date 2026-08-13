@@ -1,5 +1,5 @@
 import type { AdapterFactory } from "oidc-provider";
-import type { KeyStore, UserRepository } from "../domain/index.js";
+import type { KeyStore, UserRepository } from "@/domain/ports.js";
 import { EnvJwksKeyStore, InMemoryKeyStore } from "./aws/key-store.js";
 import { KmsKeyStore } from "./aws/kms-key-store.js";
 import { type AppConfig, loadConfig } from "./config.js";

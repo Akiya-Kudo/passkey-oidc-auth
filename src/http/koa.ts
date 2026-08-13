@@ -6,14 +6,9 @@ import { type CreateProviderOptions, createProvider } from "../oidc/index.js";
 import { createAppRouter } from "./routes/index.js";
 
 export type CreateOidcAppOptions = {
-	/** 未指定時は環境変数から RuntimeDeps を組み立てる */
 	providerOptions?: CreateProviderOptions;
 };
 
-/**
- * local-server / Lambda 共通の Koa アプリを生成する。
- * oidc-provider（Koa）をルートにマウントし、独自ルート（health / interaction）を前段に置く。
- */
 export async function createOidcApp(
 	options: CreateOidcAppOptions = {},
 ): Promise<{ app: Koa; provider: Provider }> {

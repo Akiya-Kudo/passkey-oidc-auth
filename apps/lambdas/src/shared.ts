@@ -1,8 +1,5 @@
 import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import {
-	createApiGatewayHandler,
-	createOidcApp,
-} from "../../../src/http/index.js";
+import { createApiGatewayHandler, createOidcApp } from "@/http/index.js";
 
 /**
  * Lambda 共通: Koa + oidc-provider アプリを生成して API Gateway に橋渡しする。

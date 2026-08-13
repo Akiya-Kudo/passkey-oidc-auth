@@ -162,6 +162,12 @@ export class IdpStack extends cdk.Stack {
 				format: OutputFormat.ESM,
 				mainFields: ["module", "main"],
 				externalModules: [],
+				// tsconfig paths の `@/*` -> `./src/*` と対応
+				tsconfig: path.join(repoRoot, "tsconfig.json"),
+				esbuildArgs: {
+					// CDK は `--alias` を `--alias:OLD=NEW` 形式で渡す（projectRoot 基準）
+					"--alias": "@=./src",
+				},
 			},
 		});
 	}
