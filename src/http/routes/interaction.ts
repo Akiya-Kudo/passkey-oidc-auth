@@ -2,12 +2,9 @@ import type Router from "@koa/router";
 import type { Provider } from "oidc-provider";
 import { OidcRoutes } from "@/oidc/routes.js";
 
-/**
- * Interaction UI / API
- * TODO: Passkey ログイン・登録 UI を実装する（HTML or SPA）
- * TODO: login 完了後に interactionFinished で accountId を返す
- * TODO: consent フローを実装する
- */
+// TODO: Passkey ログイン・登録 UI を実装する（HTML or SPA）
+// TODO: login 完了後に interactionFinished で accountId を返す
+// TODO: consent フローを実装する
 export function registerInteractionRoutes(router: Router, provider: Provider) {
 	router.get(`${OidcRoutes.interaction}/:uid`, async (ctx) => {
 		const details = await provider.interactionDetails(ctx.req, ctx.res);

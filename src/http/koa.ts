@@ -3,7 +3,7 @@ import mount from "koa-mount";
 import type { Provider } from "oidc-provider";
 import { type CreateProviderOptions, createProvider } from "@/oidc/provider.js";
 import { createRuntimeDeps } from "../infrastructure/index.js";
-import { createAppRouter } from "./routes/index.js";
+import { bindRoutes } from "./routes.js";
 
 export type CreateOidcAppOptions = {
 	providerOptions?: CreateProviderOptions;
@@ -13,18 +13,19 @@ export async function createOidcApp(
 	options: CreateOidcAppOptions = {},
 ): Promise<{ app: Koa; provider: Provider }> {
 	const deps = createRuntimeDeps();
-	const provider =
-		options.providerOptions != null
-			? await createProvider(options.providerOptions)
-			: await createProvider({
-					issuer: deps.config.issuer,
-					adapter: deps.adapter,
-					keyStore: deps.keyStore,
-					userRepository: deps.userRepository,
-					cookieKeys: deps.config.cookieKeys,
-				});
 
-	const router = createAppRouter(provider);
+	const providerDefaultOptions = {
+		issuer: deps.config.issuer,
+		adapter: deps.adapter,
+		keyStore: deps.keyStore,
+		userRepository: deps.userRepository,
+		cookieKeys: deps.config.cookieKeys,
+	};
+	const provider = await createProvider(
+		options.providerOptions ?? providerDefaultOptions,
+	);
+
+	const router = bindRoutes(provider);
 	const app = new Koa();
 
 	// TODO: API Gateway 経由時の proxy / secure cookie 設定を環境に合わせて調整
@@ -33,8 +34,7 @@ export async function createOidcApp(
 
 	app.use(router.routes());
 	app.use(router.allowedMethods());
-	// koa-mount の型が @types/koa@2 前提のためキャスト
-	app.use(mount(provider as unknown as Koa));
+	app.use(mount(provider));
 
 	return { app, provider };
 }

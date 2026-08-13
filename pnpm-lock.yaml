@@ -40,8 +40,8 @@ importers:
         specifier: ^8.10.152
         version: 8.10.162
       '@types/koa':
-        specifier: ^2.15.0
-        version: 2.15.2
+        specifier: ^3.0.3
+        version: 3.0.3
       '@types/koa-mount':
         specifier: ^4.0.5
         version: 4.0.5
@@ -51,6 +51,9 @@ importers:
       '@types/node':
         specifier: ^20
         version: 20.19.43
+      '@types/oidc-provider':
+        specifier: ^9.11.1
+        version: 9.11.1
       tsx:
         specifier: ^4.20.5
         version: 4.23.12
@@ -624,14 +627,17 @@ packages:
   '@types/koa-mount@4.0.5':
     resolution: {integrity: sha512-pV1njJ7r94iqAFzT9D5sGSYKUHFGudCLAnmr4WFli7V5tJf5MAgRQK9leTPJ4gjvgr+hnTf86fZsKoFN358c7w==}
 
-  '@types/koa@2.15.2':
-    resolution: {integrity: sha512-CB+iyjjh1uS5N6/CKwXvw0qA7USMS2WVc4Tjf660yCjhdvqzNr8gdFcIawB41zGGptOQ+d1fnpaQWIIUXYxR3w==}
+  '@types/koa@3.0.3':
+    resolution: {integrity: sha512-TdtNEJ7sYSrFQcVuS2ySsVqnq5EyE3oJbnfFJvkC9UtGP4Kpem5KE7r+ivHIbIAQAofSqnlB5D3vkfYO69TQpg==}
 
   '@types/koa__router@12.0.5':
     resolution: {integrity: sha512-1HeLxuDn4n5it1yZYCSyOYXo++73zT0ffoviXnPxbwbxLbvDFEvWD9ZzpRiIpK4oKR0pi+K+Mk/ZjyROjW3HSw==}
 
   '@types/node@20.19.43':
     resolution: {integrity: sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA==}
+
+  '@types/oidc-provider@9.11.1':
+    resolution: {integrity: sha512-dO7uYB0gZeYuw+HiMerjtHjN0g0AToO22kmqDegFYuTvS6P2KOGpv46+ILtRBeKoXqWGU/86f/YwJT6HpU1hMw==}
 
   '@types/qs@6.15.1':
     resolution: {integrity: sha512-GZHUBZR9hckSUhrxmp1nG6NwdpM9fCunJwyThLW1X3AyHgd9IlHb6VANpQQqDr2o/qQp6McZ3y/IA2rVzKzSbw==}
@@ -1346,13 +1352,13 @@ snapshots:
 
   '@types/koa-compose@3.2.9':
     dependencies:
-      '@types/koa': 2.15.2
+      '@types/koa': 3.0.3
 
   '@types/koa-mount@4.0.5':
     dependencies:
-      '@types/koa': 2.15.2
+      '@types/koa': 3.0.3
 
-  '@types/koa@2.15.2':
+  '@types/koa@3.0.3':
     dependencies:
       '@types/accepts': 1.3.7
       '@types/content-disposition': 0.5.9
@@ -1365,11 +1371,17 @@ snapshots:
 
   '@types/koa__router@12.0.5':
     dependencies:
-      '@types/koa': 2.15.2
+      '@types/koa': 3.0.3
 
   '@types/node@20.19.43':
     dependencies:
       undici-types: 6.21.0
+
+  '@types/oidc-provider@9.11.1':
+    dependencies:
+      '@types/keygrip': 1.0.6
+      '@types/koa': 3.0.3
+      '@types/node': 20.19.43
 
   '@types/qs@6.15.1': {}
 

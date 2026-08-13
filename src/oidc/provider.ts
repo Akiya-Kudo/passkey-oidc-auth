@@ -80,9 +80,6 @@ export async function createProvider(
 			introspection: OidcRoutes.introspection,
 			end_session: OidcRoutes.endSession,
 		},
-		pkce: {
-			methods: ["S256"],
-		},
 		cookies: {
 			keys: cookieKeys,
 		},
