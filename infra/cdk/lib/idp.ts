@@ -15,17 +15,24 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.join(__dirname, "../../..");
 
 export type IdpStackProps = cdk.StackProps & {
-	/**
-	 * OIDC issuer（Discovery の iss）。
-	 * TODO: カスタムドメイン導入後は https://auth.example.com 等に固定する
-	 * 未指定時は API の default endpoint URL をデプロイ後に手動設定する想定
-	 */
 	issuer?: string;
+	tableNames?: {
+		oidc: string;
+		users: string;
+		credentials: string;
+	};
 };
 
+// TODO: カスタムドメイン導入後は https://auth.example.com 等に固定する
 export class IdpStack extends cdk.Stack {
 	constructor(scope: Construct, id: string, props: IdpStackProps = {}) {
 		super(scope, id, props);
+
+		const tableNames = props.tableNames ?? {
+			oidc: "oidc-table",
+			users: "users-table",
+			credentials: "credentials-table",
+		};
 
 		const oidcTable = new dynamodb.Table(this, "OidcTable", {
 			tableName: undefined, // TODO: 必要なら固定名を指定
