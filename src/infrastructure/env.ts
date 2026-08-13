@@ -6,11 +6,18 @@ export type AppEnvs = {
 	awsRegion: string;
 	oidcTableName: string;
 	dynamodbEndpoint?: string; // 未設定時はAWSデフォルト
+	jwksJson?: string;
 	// TODO: Secrets Manager ARN を渡して署名鍵を読む
 	jwksSecretArn?: string; // 未設定時はプレースホルダとして KmsKeyStore を立てて明示的に失敗させている
 	// TODO: 本番 cookie 署名鍵を Secrets / SSM から読む
 	cookieKeys: string[];
 	localPort?: number;
+	trustProxy: boolean;
+	/** TODO: DynamoDB / ClientRepository から動的読み込みに切り替える */
+	oidcClientId: string;
+	/** TODO: Secrets Manager 等へ移す（平文は学習用） */
+	oidcClientSecret: string;
+	oidcRedirectUris: string[];
 };
 
 export const Environments: AppEnvs = {
@@ -25,6 +32,7 @@ export const Environments: AppEnvs = {
 		process.env.DYNAMODB_ENDPOINT,
 		{ optional: true },
 	),
+	jwksJson: parseEnv("JWKS_JSON", process.env.JWKS_JSON, { optional: true }),
 	jwksSecretArn: parseEnv("JWKS_SECRET_ARN", process.env.JWKS_SECRET_ARN, {
 		optional: true,
 	}),
@@ -36,4 +44,21 @@ export const Environments: AppEnvs = {
 		type: "number",
 		optional: true,
 	}),
+	trustProxy:
+		parseEnv("OIDC_TRUST_PROXY", process.env.OIDC_TRUST_PROXY, {
+			optional: true,
+		}) === "true",
+	oidcClientId:
+		parseEnv("OIDC_CLIENT_ID", process.env.OIDC_CLIENT_ID, {
+			optional: true,
+		}) ?? "foo",
+	oidcClientSecret:
+		parseEnv("OIDC_CLIENT_SECRET", process.env.OIDC_CLIENT_SECRET, {
+			optional: true,
+		}) ?? "bar",
+	oidcRedirectUris: (
+		parseEnv("OIDC_REDIRECT_URIS", process.env.OIDC_REDIRECT_URIS, {
+			optional: true,
+		}) ?? "http://localhost:8080/cb"
+	).split(","),
 };

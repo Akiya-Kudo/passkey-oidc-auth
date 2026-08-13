@@ -1,4 +1,5 @@
 import type { ClientMetadata } from "oidc-provider";
+import { Environments } from "@/infrastructure/env.js";
 
 /**
  * 静的 Client 定義。
@@ -7,11 +8,9 @@ import type { ClientMetadata } from "oidc-provider";
  */
 export const OidcClients: ClientMetadata[] = [
 	{
-		client_id: process.env.OIDC_CLIENT_ID ?? "foo",
-		client_secret: process.env.OIDC_CLIENT_SECRET ?? "bar",
-		redirect_uris: (
-			process.env.OIDC_REDIRECT_URIS ?? "http://localhost:8080/cb"
-		).split(","),
+		client_id: Environments.oidcClientId,
+		client_secret: Environments.oidcClientSecret,
+		redirect_uris: Environments.oidcRedirectUris,
 		grant_types: ["authorization_code"],
 		response_types: ["code"],
 		token_endpoint_auth_method: "client_secret_post",

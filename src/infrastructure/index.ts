@@ -32,36 +32,35 @@ function dynamoClientConfig(config: AppEnvs): DynamoDBClientConfig {
 }
 
 export function createRuntimeDeps(): RuntimeDeps {
-	const environmens = Environments;
-	const clientConfig = dynamoClientConfig(environmens);
+	const clientConfig = dynamoClientConfig(Environments);
 
-	const adapter = environmens.oidcTableName
+	const adapter = Environments.oidcTableName
 		? createDynamoOidcAdapterFactory({
-				tableName: environmens.oidcTableName,
+				tableName: Environments.oidcTableName,
 				clientConfig,
 			})
 		: undefined;
 
 	let keyStore: KeyStore;
-	if (process.env.JWKS_JSON) {
-		keyStore = new EnvJwksKeyStore();
-	} else if (environmens.jwksSecretArn) {
+	if (Environments.jwksJson) {
+		keyStore = new EnvJwksKeyStore(Environments.jwksJson);
+	} else if (Environments.jwksSecretArn) {
 		// TODO: Secrets Manager から JWKS を取得する実装に置き換える
 		// 現状はプレースホルダとして KmsKeyStore を立てて明示的に失敗させる
-		keyStore = new KmsKeyStore(environmens.jwksSecretArn);
+		keyStore = new KmsKeyStore(Environments.jwksSecretArn);
 	} else {
 		keyStore = new InMemoryKeyStore();
 	}
 
-	const userRepository = environmens.oidcTableName
+	const userRepository = Environments.oidcTableName
 		? new DynamoUserRepository({
-				tableName: environmens.oidcTableName,
+				tableName: Environments.oidcTableName,
 				clientConfig,
 			})
 		: undefined;
 
 	return {
-		config: environmens,
+		config: Environments,
 		adapter,
 		keyStore,
 		userRepository,
