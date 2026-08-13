@@ -159,7 +159,9 @@ export class IdpStack extends cdk.Stack {
 				minify: true,
 				sourceMap: true,
 				target: "node20",
-				format: OutputFormat.ESM,
+				// oidc-provider and its dependency tree use CommonJS dynamic requires.
+				// Lambda's Node.js runtime supports CommonJS bundles directly.
+				format: OutputFormat.CJS,
 				mainFields: ["module", "main"],
 				externalModules: [],
 				// tsconfig paths の `@/*` -> `./src/*` と対応
