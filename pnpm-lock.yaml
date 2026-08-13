@@ -11,6 +11,9 @@ importers:
       '@aws-sdk/client-dynamodb':
         specifier: ^3.901.0
         version: 3.1109.0
+      '@aws-sdk/client-secrets-manager':
+        specifier: ^3.1109.0
+        version: 3.1109.0
       '@aws-sdk/lib-dynamodb':
         specifier: ^3.901.0
         version: 3.1109.0(@aws-sdk/client-dynamodb@3.1109.0)
@@ -63,6 +66,9 @@ importers:
 
   infra/cdk:
     dependencies:
+      '@aws-sdk/client-secrets-manager':
+        specifier: ^3.1109.0
+        version: 3.1109.0
       aws-cdk-lib:
         specifier: ^2.213.0
         version: 2.264.0(constructs@10.8.1)
@@ -103,6 +109,10 @@ packages:
 
   '@aws-sdk/client-dynamodb@3.1109.0':
     resolution: {integrity: sha512-X01HO3zd6gG1ug6EAfEYxH4VsMiOFWYlmL6/eW0zmbwOsOMlD55MzXTjDfZJKtB/HUZ8mWau+dgnolLZlRZ59w==}
+    engines: {node: '>=20.0.0'}
+
+  '@aws-sdk/client-secrets-manager@3.1109.0':
+    resolution: {integrity: sha512-Lm7m8VyyzFimSAoz7eLW9uWwF9VwEvbUeHkTuPEf3608rtnn8aYUigKvK+TLoei162sRx34IxDXqvKfpi7Wdbg==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/core@3.977.7':
@@ -898,6 +908,17 @@ snapshots:
       '@aws-sdk/credential-provider-node': 3.972.79
       '@aws-sdk/dynamodb-codec': 3.973.42
       '@aws-sdk/middleware-endpoint-discovery': 3.972.28
+      '@aws-sdk/types': 3.974.3
+      '@smithy/core': 3.32.0
+      '@smithy/fetch-http-handler': 5.7.0
+      '@smithy/node-http-handler': 4.10.0
+      '@smithy/types': 4.17.0
+      tslib: 2.8.1
+
+  '@aws-sdk/client-secrets-manager@3.1109.0':
+    dependencies:
+      '@aws-sdk/core': 3.977.7
+      '@aws-sdk/credential-provider-node': 3.972.79
       '@aws-sdk/types': 3.974.3
       '@smithy/core': 3.32.0
       '@smithy/fetch-http-handler': 5.7.0

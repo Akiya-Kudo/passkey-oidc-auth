@@ -6,9 +6,8 @@ export type AppEnvs = {
 	awsRegion: string;
 	oidcTableName: string;
 	dynamodbEndpoint?: string; // 未設定時はAWSデフォルト
-	jwksJson?: string;
-	// TODO: Secrets Manager ARN を渡して署名鍵を読む
-	jwksSecretArn?: string; // 未設定時はプレースホルダとして KmsKeyStore を立てて明示的に失敗させている
+	/** 未設定時は InMemoryKeyStore（ローカル）。デプロイ時は CDK が注入する */
+	jwksSecretArn?: string;
 	// TODO: 本番 cookie 署名鍵を Secrets / SSM から読む
 	cookieKeys: string[];
 	localPort?: number;
@@ -32,7 +31,6 @@ export const Environments: AppEnvs = {
 		process.env.DYNAMODB_ENDPOINT,
 		{ optional: true },
 	),
-	jwksJson: parseEnv("JWKS_JSON", process.env.JWKS_JSON, { optional: true }),
 	jwksSecretArn: parseEnv("JWKS_SECRET_ARN", process.env.JWKS_SECRET_ARN, {
 		optional: true,
 	}),

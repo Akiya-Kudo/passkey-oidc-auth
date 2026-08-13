@@ -10,6 +10,7 @@
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"dependencies": {
+		"@aws-sdk/client-secrets-manager": "^3.1109.0",
 		"aws-cdk-lib": "^2.213.0",
 		"constructs": "^10.4.2"
 	},

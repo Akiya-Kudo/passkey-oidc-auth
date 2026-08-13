@@ -25,8 +25,11 @@ docker compose up -d
 ## Deploy
 
 ```bash
-# TODO: ISSUER / COOKIE_KEYS / JWKS を設定してから
+# TODO: ISSUER / COOKIE_KEYS を設定してから
+# JWKS は CDK が Secrets Manager に生成し、JWKS_SECRET_ARN を Lambda へ渡す
 pnpm cdk:deploy
 ```
+
+署名鍵: ローカルは `InMemoryKeyStore`、デプロイは `SecretsManagerKeyStore`。
 
 未確定事項はコード内の `TODO` コメントを参照。

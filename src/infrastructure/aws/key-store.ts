@@ -2,10 +2,8 @@ import { exportJWK, generateKeyPair } from "jose";
 import type { KeyStore } from "@/domain/ports.js";
 
 /**
- * 開発用: プロセス内で RSA 鍵を生成して保持する。
- * Lambda ではコールドスタート毎に鍵が変わるため本番利用不可。
- *
- * TODO: Secrets Manager / KMS 実装に切り替える（EnvJwksKeyStore / KmsKeyStore）
+ * ローカル開発用: プロセス内で RSA 鍵を生成して保持する。
+ * Lambda ではコールドスタート毎に鍵が変わるため使わない。
  */
 export class InMemoryKeyStore implements KeyStore {
 	#keys: Record<string, unknown>[] | undefined;
@@ -26,23 +24,5 @@ export class InMemoryKeyStore implements KeyStore {
 			];
 		}
 		return { keys: this.#keys };
-	}
-}
-
-/**
- * 環境変数 `JWKS_JSON` から秘密鍵付き JWK Set を読む。
- * TODO: 本番では Secrets Manager から同等 JSON を取得する
- */
-export class EnvJwksKeyStore implements KeyStore {
-	constructor(readonly jwksJson: string) {}
-
-	async getJwks(): Promise<{ keys: Record<string, unknown>[] }> {
-		const parsed = JSON.parse(this.jwksJson) as {
-			keys: Record<string, unknown>[];
-		};
-		if (!Array.isArray(parsed.keys) || parsed.keys.length === 0) {
-			throw new Error("JWKS_JSON must contain a non-empty keys array");
-		}
-		return parsed;
 	}
 }

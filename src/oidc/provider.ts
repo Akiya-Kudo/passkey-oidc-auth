@@ -33,13 +33,7 @@ export async function createProvider(): Promise<Provider> {
 		},
 	};
 
-	if (keyStore) {
-		configuration.jwks = await keyStore.getJwks();
-	} else {
-		// TODO: 本番では必ず KeyStore（Secrets Manager / KMS）を渡す。
-		// 未指定時は oidc-provider が起動時に一時鍵を生成するが、
-		// Lambda ではコールドスタート毎に鍵が変わり検証が壊れる。
-	}
+	configuration.jwks = await keyStore.getJwks();
 
 	return new Provider(issuer, configuration);
 }

@@ -7,6 +7,8 @@ import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction, OutputFormat } from "aws-cdk-lib/aws-lambda-nodejs";
 import * as logs from "aws-cdk-lib/aws-logs";
+import * as secretsmanager from "aws-cdk-lib/aws-secretsmanager";
+import * as triggers from "aws-cdk-lib/triggers";
 import type { Construct } from "constructs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -55,7 +57,39 @@ export class IdpStack extends cdk.Stack {
 		});
 
 		// TODO: Users / Credentials 用テーブルを分離する場合はここに追加
-		// TODO: JWKS 用 Secrets Manager Secret を作成し Lambda に読み取り権限を付与
+
+		const jwksSecret = new secretsmanager.Secret(this, "JwksSecret", {
+			description: "OIDC signing JWKS (includes private keys)",
+			removalPolicy: cdk.RemovalPolicy.DESTROY, // TODO: 本番は RETAIN
+		});
+
+		const jwksSeedFn = new NodejsFunction(this, "JwksSeedFn", {
+			entry: path.join(__dirname, "jwks-seed-handler.ts"),
+			handler: "handler",
+			runtime: lambda.Runtime.NODEJS_20_X,
+			memorySize: 256,
+			timeout: cdk.Duration.seconds(30),
+			environment: {
+				JWKS_SECRET_ARN: jwksSecret.secretArn,
+			},
+			projectRoot: repoRoot,
+			depsLockFilePath: path.join(repoRoot, "pnpm-lock.yaml"),
+			bundling: {
+				minify: true,
+				target: "node20",
+				format: OutputFormat.CJS,
+				mainFields: ["module", "main"],
+				externalModules: [],
+			},
+		});
+		jwksSecret.grantRead(jwksSeedFn);
+		jwksSecret.grantWrite(jwksSeedFn);
+
+		const jwksSeedTrigger = new triggers.Trigger(this, "JwksSeedTrigger", {
+			handler: jwksSeedFn,
+			executeAfter: [jwksSecret],
+			executeOnHandlerChange: true,
+		});
 
 		const issuer = props.issuer;
 
@@ -69,7 +103,8 @@ export class IdpStack extends cdk.Stack {
 				ISSUER: issuer ?? "",
 				OIDC_TABLE_NAME: oidcTable.tableName,
 				OIDC_TRUST_PROXY: "true",
-				// TODO: COOKIE_KEYS / JWKS_JSON / JWKS_SECRET_ARN を Secrets から注入
+				JWKS_SECRET_ARN: jwksSecret.secretArn,
+				// TODO: COOKIE_KEYS を Secrets から注入
 				COOKIE_KEYS: process.env.COOKIE_KEYS ?? "replace-me-in-prod",
 			},
 			logRetention: logs.RetentionDays.ONE_WEEK,
@@ -94,6 +129,8 @@ export class IdpStack extends cdk.Stack {
 		});
 
 		oidcTable.grantReadWriteData(oidcFn);
+		jwksSecret.grantRead(oidcFn);
+		oidcFn.node.addDependency(jwksSeedTrigger);
 
 		const httpApi = new apigwv2.HttpApi(this, "IdpHttpApi", {
 			apiName: "passkey-oidc-idp",
@@ -123,6 +160,10 @@ export class IdpStack extends cdk.Stack {
 		});
 		new cdk.CfnOutput(this, "ConfiguredIssuer", {
 			value: issuer ?? "",
+		});
+		new cdk.CfnOutput(this, "JwksSecretArn", {
+			value: jwksSecret.secretArn,
+			description: "Secrets Manager ARN for the OIDC JWKS.",
 		});
 	}
 }

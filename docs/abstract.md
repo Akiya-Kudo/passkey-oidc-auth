@@ -622,7 +622,7 @@ OIDC ClientやResource ServerがID Token / JWTを検証するための公開鍵�
 ```text
 Private Key
     ↓
-Secrets Manager / KMS等
+Secrets Manager
 ```
 
 公開鍵：

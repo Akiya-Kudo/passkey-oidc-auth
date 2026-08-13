@@ -17,6 +17,7 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-dynamodb": "^3.901.0",
+		"@aws-sdk/client-secrets-manager": "^3.1109.0",
 		"@aws-sdk/lib-dynamodb": "^3.901.0",
 		"@koa/router": "^15.7.0",
 		"jose": "^6.2.8",

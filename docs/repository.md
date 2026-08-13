@@ -31,7 +31,7 @@ passkey-oidc-auth/
 │  │  │  └─ client-repository.ts
 │  │  ├─ aws/
 │  │  │  ├─ key-store.ts
-│  │  │  └─ kms-key-store.ts
+│  │  │  └─ secrets-manager-key-store.ts
 │  │  └─ config.ts
 │  ├─ http/
 │  │  ├─ koa.ts
@@ -44,7 +44,8 @@ passkey-oidc-auth/
 │     ├─ bin/
 │     │  └─ app.ts
 │     └─ lib/
-│        └─ idp.ts
+│        ├─ idp.ts
+│        └─ jwks-seed-handler.ts
 │
 ├─ docker-compose.yml
 ├─ scripts/
