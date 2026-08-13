@@ -5,9 +5,9 @@
 - `src/domain` — User / Client / ports（HTTP・AWS 非依存）
 - `src/oidc` — `oidc-provider` 設定・ルート定義
 - `src/infrastructure` — DynamoDB Adapter / KeyStore / config
-- `src/http` — Koa マウント + API Gateway(v2) → Koa（serverless-http）
+- `src/http` — Koa マウント
 - `apps/local-server` — ローカル listen 入口
-- `apps/lambdas` — API Gateway → Koa 入口（単一 Lambda）
+- `apps/lambdas` — API Gateway(v2) → Koa（serverless-http、単一 Lambda）
 - `infra/cdk` — 唯一の別 package（HTTP API + Lambda + DynamoDB）
 
 npm パッケージ境界は **root + `infra/cdk` のみ**。論理分割は `src/` のディレクトリ。

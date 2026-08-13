@@ -1,4 +1,4 @@
-import { createOidcApp } from "@/http/index.js";
+import { createOidcApp } from "@/http/koa.js";
 
 const port = parsePort(process.env.PORT);
 

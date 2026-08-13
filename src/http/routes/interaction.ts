@@ -1,6 +1,6 @@
 import type Router from "@koa/router";
 import type { Provider } from "oidc-provider";
-import { OidcRoutes } from "../../oidc/index.js";
+import { OidcRoutes } from "@/oidc/routes.js";
 
 /**
  * Interaction UI / API

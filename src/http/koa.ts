@@ -1,8 +1,8 @@
 import Koa from "koa";
 import mount from "koa-mount";
 import type { Provider } from "oidc-provider";
+import { type CreateProviderOptions, createProvider } from "@/oidc/provider.js";
 import { createRuntimeDeps } from "../infrastructure/index.js";
-import { type CreateProviderOptions, createProvider } from "../oidc/index.js";
 import { createAppRouter } from "./routes/index.js";
 
 export type CreateOidcAppOptions = {

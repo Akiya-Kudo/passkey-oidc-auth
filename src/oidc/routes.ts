@@ -1,7 +1,3 @@
-/**
- * OIDC endpoint パス定義。
- * oidc-provider の `routes` 設定と一致させること。
- */
 export const OidcRoutes = {
 	authorization: "/authorize",
 	token: "/token",

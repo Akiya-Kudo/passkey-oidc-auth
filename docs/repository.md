@@ -9,9 +9,9 @@ passkey-oidc-auth/
 │  │  └─ src/
 │  │     └─ server.ts
 │  │
-│  └─ lambdas/                      # Lambda 入口（薄く保つ）
+│  └─ lambdas/                      # Lambda 入口（API Gateway → Koa）
 │     └─ src/
-│        └─ handler.ts              # API Gateway → Koa 単一入口
+│        └─ handler.ts              # serverless-http + 単一入口
 │
 ├─ src/                             # 共有ロジック（ディレクトリ境界のみ）
 │  ├─ oidc/
@@ -35,7 +35,6 @@ passkey-oidc-auth/
 │  │  └─ config.ts
 │  ├─ http/
 │  │  ├─ koa.ts
-│  │  ├─ apigateway.ts
 │  │  └─ routes/
 │  └─ types/
 │     └─ oidc-provider.d.ts
