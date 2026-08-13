@@ -1,13 +1,7 @@
-/**
- * API Gateway に載せるルートと、割り当てる Lambda 論理名
- * packages/oidc の OidcRoutes / LambdaRouteGroups と同期させること
- */
 export type LambdaKind = "metadata" | "authorization" | "token";
 
 export type HttpRouteDef = {
-	/** API Gateway HTTP API の path（パラメータ含む） */
 	path: string;
-	/** 許可メソッド。ANY は使わず明示する */
 	methods: Array<"GET" | "POST" | "OPTIONS">;
 	lambda: LambdaKind;
 };
@@ -74,7 +68,7 @@ export const httpRoutes: HttpRouteDef[] = [
 		lambda: "token",
 	},
 
-	// health（authorization に寄せる。TODO: 必要なら専用 Lambda に分離）
+	// healthcheck
 	{
 		path: "/health",
 		methods: ["GET"],

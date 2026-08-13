@@ -1,8 +1,8 @@
-想定 repository 構成
+# 想定 repository 構成
 
 **柔軟に変更する。差分が生じている場合には実際のrepository構成を正としてこのファイルの定義を修正する**
 
-```
+```tree
 passkey-oidc-auth/
 ├─ apps/
 │  ├─ local-server/                 # ローカル専用入口（listen のみ）

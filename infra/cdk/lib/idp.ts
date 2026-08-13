@@ -18,8 +18,6 @@ export type IdpStackProps = cdk.StackProps & {
 	issuer?: string;
 	tableNames?: {
 		oidc: string;
-		users: string;
-		credentials: string;
 	};
 };
 
@@ -30,12 +28,10 @@ export class IdpStack extends cdk.Stack {
 
 		const tableNames = props.tableNames ?? {
 			oidc: "oidc-table",
-			users: "users-table",
-			credentials: "credentials-table",
 		};
 
 		const oidcTable = new dynamodb.Table(this, "OidcTable", {
-			tableName: undefined, // TODO: 必要なら固定名を指定
+			tableName: tableNames.oidc,
 			partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
 			sortKey: { name: "sk", type: dynamodb.AttributeType.STRING },
 			billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -134,8 +130,7 @@ export class IdpStack extends cdk.Stack {
 
 		new cdk.CfnOutput(this, "HttpApiUrl", {
 			value: httpApi.apiEndpoint,
-			description:
-				"API Gateway endpoint. TODO: set ISSUER to this URL (or custom domain) after first deploy",
+			description: "API Gateway endpoint.",
 		});
 		new cdk.CfnOutput(this, "OidcTableName", {
 			value: oidcTable.tableName,
@@ -157,7 +152,7 @@ export class IdpStack extends cdk.Stack {
 			memorySize: 512,
 			timeout: cdk.Duration.seconds(29),
 			environment,
-			logRetention: logs.RetentionDays.ONE_WEEK, // TODO: 本番の保持期間を決める
+			logRetention: logs.RetentionDays.ONE_WEEK,
 			projectRoot: repoRoot,
 			depsLockFilePath: path.join(repoRoot, "pnpm-lock.yaml"),
 			bundling: {
@@ -166,9 +161,6 @@ export class IdpStack extends cdk.Stack {
 				target: "node20",
 				format: OutputFormat.ESM,
 				mainFields: ["module", "main"],
-				banner:
-					"import { createRequire } from 'module';const require = createRequire(import.meta.url);",
-				// AWS SDK v3 は Lambda ランタイムに無いためバンドルする
 				externalModules: [],
 			},
 		});
