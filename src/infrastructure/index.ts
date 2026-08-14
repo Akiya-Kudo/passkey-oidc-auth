@@ -9,9 +9,9 @@ import { type AppEnvs, Environments } from "./env.js";
 
 export type RuntimeDeps = {
 	config: AppEnvs;
-	adapter?: AdapterFactory;
+	adapter: AdapterFactory;
 	keyStore: KeyStore;
-	userRepository?: UserRepository;
+	userRepository: UserRepository;
 };
 
 export function createRuntimeDeps(): RuntimeDeps {

@@ -1,0 +1,16 @@
+services:
+  dynamodb-local:
+    image: amazon/dynamodb-local:2.5.2
+    container_name: passkey-oidc-dynamodb
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory" # 永続化が必要なら -inMemory を外し volumes を追加
+  dynamodb-admin:
+    image: "aaronshaf/dynamodb-admin:latest"
+    container_name: dynamodb-admin
+    environment:
+      - DYNAMO_ENDPOINT=http://dynamodb-local:8000
+    ports:
+      - "8001:8001"
+    depends_on:
+      - dynamodb-local

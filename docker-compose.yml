@@ -1,8 +1,0 @@
-services:
-  dynamodb-local:
-    image: amazon/dynamodb-local:2.5.2
-    container_name: passkey-oidc-dynamodb
-    ports:
-      - "8000:8000"
-    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
-    # TODO: 永続化が必要なら -inMemory を外し volumes を追加
