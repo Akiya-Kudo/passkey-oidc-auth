@@ -100,6 +100,7 @@ export class IdpStack extends cdk.Stack {
 			memorySize: 512,
 			timeout: cdk.Duration.seconds(29),
 			environment: {
+				NODE_ENV: "production", // 本番環境判定用に用いる
 				ISSUER: issuer ?? "",
 				OIDC_TABLE_NAME: oidcTable.tableName,
 				OIDC_TRUST_PROXY: "true",

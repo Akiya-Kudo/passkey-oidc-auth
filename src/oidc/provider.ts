@@ -1,6 +1,6 @@
 import { type Configuration, Provider } from "oidc-provider";
 import { createRuntimeDeps } from "@/infrastructure/index.js";
-import { createFindAccount } from "./config/find-account.js";
+import { createFindAccount } from "./config/account.js";
 import { oidcConfig } from "./config.js";
 
 export async function createProvider(): Promise<Provider> {
@@ -31,9 +31,8 @@ export async function createProvider(): Promise<Provider> {
 		cookies: {
 			keys: cookieKeys,
 		},
+		jwks: await keyStore.getJwks(),
 	};
-
-	configuration.jwks = await keyStore.getJwks();
 
 	return new Provider(issuer, configuration);
 }

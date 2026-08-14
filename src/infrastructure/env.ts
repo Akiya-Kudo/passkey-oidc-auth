@@ -1,6 +1,7 @@
 import { parseEnv } from "../../utils/env.js";
 
 export type AppEnvs = {
+	env?: string;
 	issuer: string;
 	// AWS
 	awsRegion: string;
@@ -20,6 +21,7 @@ export type AppEnvs = {
 };
 
 export const Environments: AppEnvs = {
+	env: parseEnv("NODE_ENV", process.env.NODE_ENV, { optional: true }),
 	issuer: parseEnv("ISSUER", process.env.ISSUER),
 	oidcTableName: parseEnv("OIDC_TABLE_NAME", process.env.OIDC_TABLE_NAME),
 	awsRegion: parseEnv("AWS_REGION", process.env.AWS_REGION),

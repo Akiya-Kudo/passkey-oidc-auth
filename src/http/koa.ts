@@ -1,13 +1,11 @@
 import Koa from "koa";
 import mount from "koa-mount";
-import type { Provider } from "oidc-provider";
 import { Environments } from "@/infrastructure/env.js";
 import { createProvider } from "@/oidc/provider.js";
 import { bindCustomRoutes } from "./routes.js";
 
 export async function createOidcApp(): Promise<{
 	app: Koa;
-	provider: Provider;
 }> {
 	const provider = await createProvider();
 
@@ -22,5 +20,5 @@ export async function createOidcApp(): Promise<{
 	app.use(router.allowedMethods());
 	app.use(mount(provider));
 
-	return { app, provider };
+	return { app };
 }
