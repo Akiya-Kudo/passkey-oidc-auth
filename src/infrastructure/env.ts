@@ -22,10 +22,7 @@ export type AppEnvs = {
 export const Environments: AppEnvs = {
 	issuer: parseEnv("ISSUER", process.env.ISSUER),
 	oidcTableName: parseEnv("OIDC_TABLE_NAME", process.env.OIDC_TABLE_NAME),
-	awsRegion: parseEnv(
-		"AWS_REGION",
-		process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION,
-	),
+	awsRegion: parseEnv("AWS_REGION", process.env.AWS_REGION),
 	dynamodbEndpoint: parseEnv(
 		"DYNAMODB_ENDPOINT",
 		process.env.DYNAMODB_ENDPOINT,
