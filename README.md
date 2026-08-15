@@ -50,7 +50,7 @@ The build is included automatically in `pnpm cdk:synth` and `pnpm cdk:deploy`.
 
 ### Local development
 
-Run both processes and open the Vite origin (`http://localhost:5000`). Vite serves the React SPA for `/interaction/*` and proxies the OIDC and interaction API routes to Koa on port 3000. Set `ISSUER=http://localhost:5000` in `.env` (as shown in `.env.sample`) so that OIDC redirects and the browser origin agree.
+Run both processes. Vite serves the React SPA only for `/interaction/:uid`; the UID is created by an OIDC `/authorize` request, so `http://localhost:5000/` is not a standalone application page. Use `http://localhost:5000/health` to check the local services, then begin an Authorization Code + PKCE request at `/authorize`. Vite proxies the OIDC and interaction API routes to Koa on port 3000. Set `ISSUER=http://localhost:5000` in `.env` (as shown in `.env.sample`) so that OIDC redirects and the browser origin agree.
 
 ```bash
 pnpm dev
