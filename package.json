@@ -14,7 +14,7 @@
 		"lint": "biome check src apps infra/cdk/lib infra/cdk/bin scripts utils biome.json",
 		"format": "biome format --write src apps infra/cdk/lib infra/cdk/bin scripts utils biome.json",
 		"ts:check": "tsc -p tsconfig.json --noEmit && tsc -p apps/interaction-ui/tsconfig.json --noEmit",
-		"tables:local": "tsx scripts/create-local-tables.ts"
+		"tables:local": "tsx  --env-file .env scripts/create-local-tables.ts"
 	},
 	"dependencies": {
 		"@aws-sdk/client-dynamodb": "^3.901.0",

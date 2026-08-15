@@ -10,9 +10,9 @@ import {
  * TODO: Users / Credentials 用テーブル定義を追加する
  * Usage: pnpm tables:local
  */
-const endpoint = process.env.DYNAMODB_ENDPOINT ?? "http://localhost:8000";
-const region = process.env.AWS_REGION ?? "ap-northeast-1";
-const tableName = process.env.OIDC_TABLE_NAME ?? "passkey-oidc-local";
+const endpoint = throwIfUndefined(process.env.DYNAMODB_ENDPOINT);
+const region = throwIfUndefined(process.env.AWS_REGION);
+const tableName = throwIfUndefined(process.env.OIDC_TABLE_NAME);
 
 const client = new DynamoDBClient({
 	region,
@@ -70,3 +70,12 @@ async function main() {
 }
 
 await main();
+
+function throwIfUndefined<T>(value: T | undefined): T {
+	if (!value) {
+		throw new Error(
+			"required environment variable is not set, please place .env file in the root directory",
+		);
+	}
+	return value;
+}
