@@ -6,7 +6,7 @@ export default defineConfig({
 	base: "/interaction/",
 	server: {
 		host: "127.0.0.1",
-		port: 5000,
+		port: 4000,
 		strictPort: true,
 		proxy: {
 			"/.well-known": "http://localhost:3000",

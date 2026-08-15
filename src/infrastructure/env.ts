@@ -11,7 +11,7 @@ export type AppEnvs = {
 	jwksSecretArn?: string;
 	// TODO: 本番 cookie 署名鍵を Secrets / SSM から読む
 	cookieKeys: string[];
-	localPort?: number;
+	localIdpPort?: number;
 	trustProxy: boolean;
 	/** TODO: DynamoDB / ClientRepository から動的読み込みに切り替える */
 	oidcClientId: string;
@@ -37,7 +37,7 @@ export const Environments: AppEnvs = {
 		parseEnv("COOKIE_KEYS", process.env.COOKIE_KEYS, { optional: true }) ??
 		"local-dev-cookie-key"
 	).split(","),
-	localPort: parseEnv("LOCAL_PORT", process.env.LOCAL_PORT, {
+	localIdpPort: parseEnv("LOCAL_IDP_PORT", process.env.LOCAL_IDP_PORT, {
 		type: "number",
 		optional: true,
 	}),

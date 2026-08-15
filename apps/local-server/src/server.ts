@@ -3,6 +3,6 @@ import { Environments } from "@/infrastructure/env.js";
 
 const { app } = await createOidcApp();
 
-app.listen(Environments.localPort, () => {
+app.listen(Environments.localIdpPort, () => {
 	console.log(`Server is running on ${Environments.issuer}`);
 });
