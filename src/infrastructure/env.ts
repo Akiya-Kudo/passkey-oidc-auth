@@ -1,4 +1,4 @@
-import { parseEnv } from "../../utils/env.js";
+import { parseEnv } from "../utils/env.js";
 
 export type AppEnvs = {
 	env?: string;

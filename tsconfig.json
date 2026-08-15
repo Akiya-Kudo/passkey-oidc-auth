@@ -6,6 +6,6 @@
 			"@/*": ["./src/*"]
 		}
 	},
-	"include": ["src/**/*", "apps/**/*", "scripts/**/*", "utils/**/*"],
-	"exclude": ["node_modules", "**/dist", "**/cdk.out"]
+	"include": ["src/**/*", "apps/**/*", "scripts/**/*", "src/utils/**/*"],
+	"exclude": ["node_modules", "**/dist", "**/cdk.out", "apps/interaction-ui"]
 }

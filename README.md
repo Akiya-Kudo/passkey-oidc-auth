@@ -48,6 +48,15 @@ pnpm build:interaction-ui
 
 The build is included automatically in `pnpm cdk:synth` and `pnpm cdk:deploy`.
 
+### Local development
+
+Run both processes and open the Vite origin (`http://localhost:5000`). Vite serves the React SPA for `/interaction/*` and proxies the OIDC and interaction API routes to Koa on port 3000. Set `ISSUER=http://localhost:5000` in `.env` (as shown in `.env.sample`) so that OIDC redirects and the browser origin agree.
+
+```bash
+pnpm dev
+pnpm dev:interaction-ui
+```
+
 ## More doc
 
 - Please reffer [docs](./docs/abstract.md)
