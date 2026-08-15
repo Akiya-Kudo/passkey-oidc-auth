@@ -19,6 +19,11 @@ export async function createProvider(): Promise<Provider> {
 			revocation: { enabled: true },
 			introspection: { enabled: true },
 		},
+		interactions: {
+			url(_ctx, interaction) {
+				return `${oidcConfig.routes.interaction}/${interaction.uid}`;
+			},
+		},
 		routes: {
 			authorization: oidcConfig.routes.authorization,
 			token: oidcConfig.routes.token,

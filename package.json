@@ -5,6 +5,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "tsx watch --env-file .env apps/local-server/src/server.ts",
+		"dev:interaction-ui": "vite --config apps/interaction-ui/vite.config.ts",
+		"build:interaction-ui": "vite build --config apps/interaction-ui/vite.config.ts",
 		"start:local": "tsx --env-file .env apps/local-server/src/server.ts",
 		"typecheck": "tsc -p tsconfig.json --noEmit",
 		"lint": "biome check src apps infra/cdk/lib infra/cdk/bin scripts utils biome.json",
@@ -12,8 +14,8 @@
 		"ts:check": "tsc --noEmit",
 		"tables:local": "tsx scripts/create-local-tables.ts",
 		"cdk": "pnpm --filter @passkey-oidc-auth/cdk",
-		"cdk:synth": "pnpm --filter @passkey-oidc-auth/cdk synth",
-		"cdk:deploy": "pnpm --filter @passkey-oidc-auth/cdk run deploy"
+		"cdk:synth": "pnpm build:interaction-ui && pnpm --filter @passkey-oidc-auth/cdk synth",
+		"cdk:deploy": "pnpm build:interaction-ui && pnpm --filter @passkey-oidc-auth/cdk run deploy"
 	},
 	"dependencies": {
 		"@aws-sdk/client-dynamodb": "^3.901.0",
@@ -24,6 +26,8 @@
 		"koa": "^3.2.1",
 		"koa-mount": "^4.2.0",
 		"oidc-provider": "^9.11.3",
+		"react": "^19.2.0",
+		"react-dom": "^19.2.0",
 		"serverless-http": "^3.2.0"
 	},
 	"devDependencies": {
@@ -33,9 +37,13 @@
 		"@types/koa-mount": "^4.0.5",
 		"@types/koa__router": "^12.0.4",
 		"@types/node": "^20",
+		"@types/react": "^19.2.2",
+		"@types/react-dom": "^19.2.2",
 		"@types/oidc-provider": "^9.11.1",
+		"esbuild": "^0.25.9",
 		"tsx": "^4.20.5",
-		"typescript": "^5"
+		"typescript": "^5",
+		"vite": "^7.1.12"
 	},
 	"packageManager": "pnpm@10.34.5"
 }
