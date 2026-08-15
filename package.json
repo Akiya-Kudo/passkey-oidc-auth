@@ -4,18 +4,17 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "tsx watch --env-file .env apps/local-server/src/server.ts",
+		"dev": "pnpm run dev:idp & pnpm run dev:interaction-ui & wait",
+		"dev:idp": "tsx watch --env-file .env apps/local-server/src/server.ts",
 		"dev:interaction-ui": "vite --config apps/interaction-ui/vite.config.ts",
 		"build:interaction-ui": "vite build --config apps/interaction-ui/vite.config.ts",
-		"start:local": "tsx --env-file .env apps/local-server/src/server.ts",
+		"cdk:synth": "pnpm build:interaction-ui && pnpm --filter @passkey-oidc-auth/cdk synth",
+		"cdk:deploy": "pnpm build:interaction-ui && pnpm --filter @passkey-oidc-auth/cdk run deploy",
 		"typecheck": "tsc -p tsconfig.json --noEmit && tsc -p apps/interaction-ui/tsconfig.json --noEmit",
 		"lint": "biome check src apps infra/cdk/lib infra/cdk/bin scripts utils biome.json",
 		"format": "biome format --write src apps infra/cdk/lib infra/cdk/bin scripts utils biome.json",
 		"ts:check": "tsc -p tsconfig.json --noEmit && tsc -p apps/interaction-ui/tsconfig.json --noEmit",
-		"tables:local": "tsx scripts/create-local-tables.ts",
-		"cdk": "pnpm --filter @passkey-oidc-auth/cdk",
-		"cdk:synth": "pnpm build:interaction-ui && pnpm --filter @passkey-oidc-auth/cdk synth",
-		"cdk:deploy": "pnpm build:interaction-ui && pnpm --filter @passkey-oidc-auth/cdk run deploy"
+		"tables:local": "tsx scripts/create-local-tables.ts"
 	},
 	"dependencies": {
 		"@aws-sdk/client-dynamodb": "^3.901.0",
