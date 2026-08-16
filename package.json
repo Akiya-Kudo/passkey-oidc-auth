@@ -11,8 +11,8 @@
 		"cdk:synth": "pnpm build:interaction-ui && pnpm --filter @passkey-oidc-auth/cdk synth",
 		"cdk:deploy": "pnpm build:interaction-ui && pnpm --filter @passkey-oidc-auth/cdk run deploy",
 		"typecheck": "tsc -p tsconfig.json --noEmit && tsc -p apps/interaction-ui/tsconfig.json --noEmit",
-		"lint": "biome check src apps infra/cdk/lib infra/cdk/bin scripts utils biome.json",
-		"format": "biome format --write src apps infra/cdk/lib infra/cdk/bin scripts utils biome.json",
+		"lint": "biome check src apps infra/cdk/lib infra/cdk/bin scripts biome.json",
+		"format": "biome format --write src apps infra/cdk/lib infra/cdk/bin scripts biome.json",
 		"ts:check": "tsc -p tsconfig.json --noEmit && tsc -p apps/interaction-ui/tsconfig.json --noEmit",
 		"tables:local": "tsx  --env-file .env scripts/create-local-tables.ts"
 	},

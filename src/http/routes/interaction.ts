@@ -2,6 +2,7 @@ import type Router from "@koa/router";
 import type { DefaultContext, DefaultState, ParameterizedContext } from "koa";
 import type { Provider } from "oidc-provider";
 import { Environments } from "@/infrastructure/env.js";
+import { AppError, ErrorCodes } from "../app-error.js";
 
 type InteractionParams = {
 	client_id: string;
@@ -21,14 +22,22 @@ type InteractionRouterContext = ParameterizedContext<
 
 function requireCurrentInteraction(ctx: InteractionRouterContext, uid: string) {
 	if (ctx.params.uid !== uid) {
-		ctx.throw(404, "Interaction not found");
+		throw new AppError(
+			404,
+			ErrorCodes.interactionNotFound,
+			"Interaction not found",
+		);
 	}
 }
 
 function requireSameOrigin(ctx: InteractionRouterContext) {
 	const origin = ctx.get("Origin");
 	if (origin !== Environments.issuer) {
-		ctx.throw(403, "Cross-origin interaction submission is not allowed");
+		throw new AppError(
+			403,
+			ErrorCodes.crossOriginForbidden,
+			"Cross-origin interaction submission is not allowed",
+		);
 	}
 }
 
@@ -60,11 +69,12 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
 		requireSameOrigin(ctx);
 		// TODO: WebAuthn assertion を検証し、その検証結果から accountId を決定する。
 		// accountId をクライアントから受け取って interactionFinished を呼んではならない。
-		ctx.status = 501;
-		ctx.body = {
-			error: "not_implemented",
-			message: "Passkey assertion verification is not implemented yet",
-		};
+		throw new AppError(
+			501,
+			ErrorCodes.notImplemented,
+			"Passkey assertion verification is not implemented yet",
+			{ expose: true },
+		);
 	});
 
 	router.post("/api/interactions/:uid/confirm", async (ctx) => {
@@ -72,13 +82,21 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
 		const details = await provider.interactionDetails(ctx.req, ctx.res);
 		requireCurrentInteraction(ctx, details.uid);
 		if (details.prompt.name !== "consent") {
-			ctx.throw(400, "The current interaction does not require consent");
+			throw new AppError(
+				400,
+				ErrorCodes.consentNotRequired,
+				"The current interaction does not require consent",
+			);
 		}
 		const params = details.params as InteractionParams;
 		const consentDetails = details.prompt.details as ConsentDetails;
 		const accountId = details.session?.accountId;
 		if (!accountId) {
-			ctx.throw(400, "The consent interaction has no authenticated account");
+			throw new AppError(
+				400,
+				ErrorCodes.unauthenticatedConsent,
+				"The consent interaction has no authenticated account",
+			);
 		}
 
 		let grant = details.grantId

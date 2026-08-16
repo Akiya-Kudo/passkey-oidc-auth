@@ -1,43 +1,9 @@
-import { type Configuration, Provider } from "oidc-provider";
+import { Provider } from "oidc-provider";
 import { createRuntimeDeps } from "@/infrastructure/index.js";
-import { createFindAccount } from "./config/account.js";
-import { oidcConfig } from "./config.js";
+import { createConfiguration } from "./config.js";
 
 export async function createProvider(): Promise<Provider> {
-	const clients = oidcConfig.clients;
-
 	const deps = createRuntimeDeps();
-	const { config, adapter, keyStore, userRepository } = deps;
-	const { issuer, cookieKeys } = config;
-
-	const configuration: Configuration = {
-		clients,
-		adapter,
-		findAccount: await createFindAccount(userRepository),
-		features: {
-			devInteractions: { enabled: false },
-			revocation: { enabled: true },
-			introspection: { enabled: true },
-		},
-		interactions: {
-			url(_ctx, interaction) {
-				return `${oidcConfig.routes.interaction}/${interaction.uid}`;
-			},
-		},
-		routes: {
-			authorization: oidcConfig.routes.authorization,
-			token: oidcConfig.routes.token,
-			userinfo: oidcConfig.routes.userinfo,
-			jwks: oidcConfig.routes.jwks,
-			revocation: oidcConfig.routes.revocation,
-			introspection: oidcConfig.routes.introspection,
-			end_session: oidcConfig.routes.endSession,
-		},
-		cookies: {
-			keys: cookieKeys,
-		},
-		jwks: await keyStore.getJwks(),
-	};
-
-	return new Provider(issuer, configuration);
+	const configuration = await createConfiguration(deps);
+	return new Provider(deps.config.issuer, configuration);
 }

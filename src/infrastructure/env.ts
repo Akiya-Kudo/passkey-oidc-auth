@@ -59,3 +59,7 @@ export const Environments: AppEnvs = {
 		}) ?? "http://localhost:8080/cb"
 	).split(","),
 };
+
+export function isProduction(): boolean {
+	return Environments.env === "production";
+}

@@ -1,3 +1,4 @@
+import { type ApiErrorBody, userMessageFor } from "../types/api-error";
 import type { InteractionContext } from "../types/interaction";
 
 function interactionApiUrl(uid: string, action?: "login" | "confirm") {
@@ -6,13 +7,20 @@ function interactionApiUrl(uid: string, action?: "login" | "confirm") {
 	return action ? `${base}/${action}` : `${base}/context`;
 }
 
-async function readErrorMessage(response: Response, fallback: string) {
+async function readApiError(
+	response: Response,
+	fallback: string,
+): Promise<Error> {
+	let body: ApiErrorBody | undefined;
 	try {
-		const body = (await response.json()) as { message?: string };
-		return body.message ?? fallback;
+		body = (await response.json()) as ApiErrorBody;
 	} catch {
-		return fallback;
+		body = undefined;
 	}
+	if (import.meta.env.DEV && body?.debug) {
+		console.debug("interaction api error", body);
+	}
+	return new Error(userMessageFor(body, fallback));
 }
 
 export async function fetchInteractionContext(uid: string) {
@@ -20,7 +28,10 @@ export async function fetchInteractionContext(uid: string) {
 		credentials: "same-origin",
 	});
 	if (!response.ok) {
-		throw new Error("認証セッションを読み込めませんでした。");
+		throw await readApiError(
+			response,
+			"認証セッションを読み込めませんでした。",
+		);
 	}
 	return (await response.json()) as InteractionContext;
 }
@@ -31,9 +42,7 @@ export async function submitLogin(uid: string) {
 		credentials: "same-origin",
 	});
 	if (!response.ok) {
-		throw new Error(
-			await readErrorMessage(response, "パスキー認証に失敗しました。"),
-		);
+		throw await readApiError(response, "パスキー認証に失敗しました。");
 	}
 }
 
