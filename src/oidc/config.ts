@@ -1,21 +1,18 @@
-import type { Configuration } from "oidc-provider";
-import type { RuntimeDeps } from "@/infrastructure/index.js";
+import type { AdapterFactory, Configuration } from "oidc-provider";
+import type { KeyStore, UserRepository } from "@/domain/ports.js";
 import { createFindAccount } from "./config/account.js";
 import { OidcClients } from "./config/clients.js";
 import { OidcRoutes } from "./config/routes.js";
 import { renderOidcError } from "./error-hooks.js";
 
-export const oidcConfig = {
-	clients: OidcClients,
-	routes: OidcRoutes,
-};
-
 export async function createConfiguration(
-	deps: RuntimeDeps,
+	adapter: AdapterFactory,
+	userRepository: UserRepository,
+	keyStore: KeyStore,
+	cookieKeys: string[],
 ): Promise<Configuration> {
-	const { config, adapter, userRepository, keyStore } = deps;
 	return {
-		clients: oidcConfig.clients,
+		clients: OidcClients,
 		adapter,
 		findAccount: await createFindAccount(userRepository),
 		features: {
@@ -25,20 +22,20 @@ export async function createConfiguration(
 		},
 		interactions: {
 			url(_ctx, interaction) {
-				return `${oidcConfig.routes.interaction}/${interaction.uid}`;
+				return `${OidcRoutes.interaction}/${interaction.uid}`;
 			},
 		},
 		routes: {
-			authorization: oidcConfig.routes.authorization,
-			token: oidcConfig.routes.token,
-			userinfo: oidcConfig.routes.userinfo,
-			jwks: oidcConfig.routes.jwks,
-			revocation: oidcConfig.routes.revocation,
-			introspection: oidcConfig.routes.introspection,
-			end_session: oidcConfig.routes.endSession,
+			authorization: OidcRoutes.authorization,
+			token: OidcRoutes.token,
+			userinfo: OidcRoutes.userinfo,
+			jwks: OidcRoutes.jwks,
+			revocation: OidcRoutes.revocation,
+			introspection: OidcRoutes.introspection,
+			end_session: OidcRoutes.endSession,
 		},
 		cookies: {
-			keys: config.cookieKeys,
+			keys: cookieKeys,
 		},
 		renderError: renderOidcError,
 		jwks: await keyStore.getJwks(),
