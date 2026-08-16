@@ -13,14 +13,19 @@ const GRANTABLE = new Set([
 ]);
 
 type StoredItem = {
+	// USECASE NAME (Interaction, Session, Grant) + USECASE ID (Interaction ID, Session ID, Grant ID) e.g. "OIDC:interaction:1234567890"
 	pk: string;
+	// FIXED VALUE: "OIDC"
 	sk: string;
+	// USECASE NAME (Interaction, Session, Grant)
 	model: string;
+	// USECASE ID (Interaction ID, Session ID, Grant ID)
 	id: string;
 	payload: AdapterPayload;
 	expiresAt?: number;
 	grantId?: string;
 	userCode?: string;
+	// Public Key ID (UID)
 	uid?: string;
 };
 

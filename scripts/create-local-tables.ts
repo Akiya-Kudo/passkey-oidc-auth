@@ -2,6 +2,7 @@ import {
 	CreateTableCommand,
 	DynamoDBClient,
 	ResourceInUseException,
+	UpdateTimeToLiveCommand,
 } from "@aws-sdk/client-dynamodb";
 
 /**
@@ -57,6 +58,15 @@ async function main() {
 					},
 				],
 				BillingMode: "PAY_PER_REQUEST",
+			}),
+		);
+		await client.send(
+			new UpdateTimeToLiveCommand({
+				TableName: tableName,
+				TimeToLiveSpecification: {
+					AttributeName: "expiresAt",
+					Enabled: true,
+				},
 			}),
 		);
 		console.log(`Created table: ${tableName}`);
