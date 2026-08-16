@@ -16,10 +16,20 @@ export type LogFields = {
 type SerializedError = {
 	name?: string;
 	message: string;
+	error_description?: string;
+	error_detail?: string;
 	stack?: string;
 	awsHttpStatus?: number;
 	awsRequestId?: string;
 };
+
+function stringProperty(err: object, key: string): string | undefined {
+	if (!(key in err)) {
+		return undefined;
+	}
+	const value = (err as Record<string, unknown>)[key];
+	return typeof value === "string" ? value : undefined;
+}
 
 function serializeError(err: unknown): SerializedError {
 	if (!(err instanceof Error)) {
@@ -30,6 +40,14 @@ function serializeError(err: unknown): SerializedError {
 		name: err.name,
 		message: err.message,
 	};
+	const errorDescription = stringProperty(err, "error_description");
+	if (errorDescription) {
+		serialized.error_description = errorDescription;
+	}
+	const errorDetail = stringProperty(err, "error_detail");
+	if (errorDetail) {
+		serialized.error_detail = errorDetail;
+	}
 
 	if (!isProduction() && err.stack) {
 		serialized.stack = err.stack;

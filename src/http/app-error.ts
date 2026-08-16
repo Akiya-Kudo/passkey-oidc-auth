@@ -20,6 +20,7 @@ export type PublicErrorBody = {
 	debug?: {
 		name: string;
 		message: string;
+		error_description?: string;
 	};
 };
 

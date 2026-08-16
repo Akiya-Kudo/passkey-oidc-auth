@@ -40,15 +40,31 @@ function hasNumber<K extends string>(
 	);
 }
 
+function oidcErrorDescription(err: unknown): string | undefined {
+	if (
+		typeof err !== "object" ||
+		err === null ||
+		!("error_description" in err)
+	) {
+		return undefined;
+	}
+
+	return typeof err.error_description === "string"
+		? err.error_description
+		: undefined;
+}
+
 function withDebug(body: PublicErrorBody, err: unknown): PublicErrorBody {
 	if (isProduction() || !(err instanceof Error)) {
 		return body;
 	}
+	const errorDescription = oidcErrorDescription(err);
 	return {
 		...body,
 		debug: {
 			name: err.name,
 			message: err.message,
+			...(errorDescription ? { error_description: errorDescription } : {}),
 		},
 	};
 }

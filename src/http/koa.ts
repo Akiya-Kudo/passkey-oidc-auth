@@ -19,6 +19,8 @@ export async function createOidcApp(): Promise<{
 
 	const router = bindCustomRoutes(provider);
 	const app = new Koa<AppState>();
+	// app.keys array of signed cookie keys. Cookie の署名検証に使用する鍵をoidc-provider と共有してMountしているkoa側も使用する
+	app.keys = Environments.cookieKeys;
 
 	// TODO: API Gateway 経由時の proxy / secure cookie 設定を環境に合わせて調整
 	// provider.proxy = true が必要な場合あり（X-Forwarded-Proto）

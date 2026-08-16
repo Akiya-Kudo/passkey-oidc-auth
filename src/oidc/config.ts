@@ -35,10 +35,16 @@ export async function createConfiguration(): Promise<Configuration> {
 			end_session: routes.endSession,
 		},
 		cookies: {
+			// Cookie 著名様秘密鍵
 			keys: Environments.cookieKeys,
 			short: {
 				path: "/",
 			},
+		},
+		ttl: {
+			Interaction: 60 * 60, // 1 hour
+			Session: 14 * 24 * 60 * 60, // 14 days
+			Grant: 14 * 24 * 60 * 60, // 14 days
 		},
 		renderError: renderOidcError,
 		jwks: await keyStore.getJwks(),
