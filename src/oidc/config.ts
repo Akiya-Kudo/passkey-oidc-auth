@@ -1,18 +1,18 @@
-import type { AdapterFactory, Configuration } from "oidc-provider";
-import type { KeyStore, UserRepository } from "@/domain/ports.js";
+import type { Configuration } from "oidc-provider";
+import { createRuntimeDeps } from "@/infrastructure/dependency.js";
+import { Environments } from "@/infrastructure/env.js";
 import { createFindAccount } from "./config/account.js";
 import { OidcClients } from "./config/clients.js";
 import { OidcRoutes } from "./config/routes.js";
 import { renderOidcError } from "./error-hooks.js";
 
-export async function createConfiguration(
-	adapter: AdapterFactory,
-	userRepository: UserRepository,
-	keyStore: KeyStore,
-	cookieKeys: string[],
-): Promise<Configuration> {
+export async function createConfiguration(): Promise<Configuration> {
+	const { adapter, userRepository, keyStore } = createRuntimeDeps();
+	const clients = OidcClients;
+	const routes = OidcRoutes;
+
 	return {
-		clients: OidcClients,
+		clients,
 		adapter,
 		findAccount: await createFindAccount(userRepository),
 		features: {
@@ -26,16 +26,16 @@ export async function createConfiguration(
 			},
 		},
 		routes: {
-			authorization: OidcRoutes.authorization,
-			token: OidcRoutes.token,
-			userinfo: OidcRoutes.userinfo,
-			jwks: OidcRoutes.jwks,
-			revocation: OidcRoutes.revocation,
-			introspection: OidcRoutes.introspection,
-			end_session: OidcRoutes.endSession,
+			authorization: routes.authorization,
+			token: routes.token,
+			userinfo: routes.userinfo,
+			jwks: routes.jwks,
+			revocation: routes.revocation,
+			introspection: routes.introspection,
+			end_session: routes.endSession,
 		},
 		cookies: {
-			keys: cookieKeys,
+			keys: Environments.cookieKeys,
 		},
 		renderError: renderOidcError,
 		jwks: await keyStore.getJwks(),

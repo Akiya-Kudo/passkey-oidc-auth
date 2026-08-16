@@ -32,7 +32,5 @@ export function createRuntimeDeps() {
 		adapter,
 		keyStore,
 		userRepository,
-		cookieKeys: Environments.cookieKeys,
-		issuer: Environments.issuer,
 	};
 }

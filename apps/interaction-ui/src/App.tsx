@@ -16,7 +16,9 @@ export function App() {
 		try {
 			const uid = interactionUid();
 			void fetchInteractionContext(uid)
-				.then(setInteraction)
+				.then((context) => {
+					setInteraction(context);
+				})
 				.catch((cause: unknown) => {
 					setError(
 						cause instanceof Error ? cause.message : "予期しないエラーです。",
