@@ -36,6 +36,9 @@ export async function createConfiguration(): Promise<Configuration> {
 		},
 		cookies: {
 			keys: Environments.cookieKeys,
+			short: {
+				path: "/",
+			},
 		},
 		renderError: renderOidcError,
 		jwks: await keyStore.getJwks(),

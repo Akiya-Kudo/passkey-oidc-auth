@@ -62,7 +62,7 @@ function write(level: LogLevel, fields: LogFields): void {
 		payload.err = serializeError(err);
 	}
 
-	const line = JSON.stringify(payload);
+	const line = isProduction() ? JSON.stringify(payload) : payload;
 	if (level === "error") {
 		console.error(line);
 		return;

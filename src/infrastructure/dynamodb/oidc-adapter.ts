@@ -1,12 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import {
-	DeleteCommand,
-	DynamoDBDocumentClient,
-	GetCommand,
-	PutCommand,
-	QueryCommand,
-	UpdateCommand,
-} from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 import type { Adapter, AdapterPayload } from "oidc-provider";
 import type { DynamoOidcAdapterOptions } from "./factory.js";
 
@@ -34,12 +27,12 @@ type StoredItem = {
 export class DynamoOidcAdapter implements Adapter {
 	readonly #name: string;
 	readonly #tableName: string;
-	readonly #doc: DynamoDBDocumentClient;
+	readonly #doc: DynamoDBDocument;
 
 	constructor(name: string, options: DynamoOidcAdapterOptions) {
 		this.#name = name;
 		this.#tableName = options.tableName;
-		this.#doc = DynamoDBDocumentClient.from(
+		this.#doc = DynamoDBDocument.from(
 			new DynamoDBClient(options.clientConfig ?? {}),
 			{
 				marshallOptions: { removeUndefinedValues: true },
@@ -81,21 +74,17 @@ export class DynamoOidcAdapter implements Adapter {
 			item.uid = payload.uid;
 		}
 
-		await this.#doc.send(
-			new PutCommand({
-				TableName: this.#tableName,
-				Item: item,
-			}),
-		);
+		await this.#doc.put({
+			TableName: this.#tableName,
+			Item: item,
+		});
 	}
 
 	async find(id: string): Promise<AdapterPayload | undefined> {
-		const result = await this.#doc.send(
-			new GetCommand({
-				TableName: this.#tableName,
-				Key: { pk: this.#pk(id), sk: this.#sk() },
-			}),
-		);
+		const result = await this.#doc.get({
+			TableName: this.#tableName,
+			Key: { pk: this.#pk(id), sk: this.#sk() },
+		});
 		const item = result.Item as StoredItem | undefined;
 		if (!item) {
 			return undefined;
@@ -107,15 +96,13 @@ export class DynamoOidcAdapter implements Adapter {
 	}
 
 	async findByUid(uid: string): Promise<AdapterPayload | undefined> {
-		const result = await this.#doc.send(
-			new QueryCommand({
-				TableName: this.#tableName,
-				IndexName: "uidIndex",
-				KeyConditionExpression: "uid = :uid",
-				ExpressionAttributeValues: { ":uid": uid },
-				Limit: 1,
-			}),
-		);
+		const result = await this.#doc.query({
+			TableName: this.#tableName,
+			IndexName: "uidIndex",
+			KeyConditionExpression: "uid = :uid",
+			ExpressionAttributeValues: { ":uid": uid },
+			Limit: 1,
+		});
 		const item = result.Items?.[0] as StoredItem | undefined;
 		if (!item) {
 			return undefined;
@@ -124,15 +111,13 @@ export class DynamoOidcAdapter implements Adapter {
 	}
 
 	async findByUserCode(userCode: string): Promise<AdapterPayload | undefined> {
-		const result = await this.#doc.send(
-			new QueryCommand({
-				TableName: this.#tableName,
-				IndexName: "userCodeIndex",
-				KeyConditionExpression: "userCode = :userCode",
-				ExpressionAttributeValues: { ":userCode": userCode },
-				Limit: 1,
-			}),
-		);
+		const result = await this.#doc.query({
+			TableName: this.#tableName,
+			IndexName: "userCodeIndex",
+			KeyConditionExpression: "userCode = :userCode",
+			ExpressionAttributeValues: { ":userCode": userCode },
+			Limit: 1,
+		});
 		const item = result.Items?.[0] as StoredItem | undefined;
 		if (!item) {
 			return undefined;
@@ -141,47 +126,39 @@ export class DynamoOidcAdapter implements Adapter {
 	}
 
 	async destroy(id: string): Promise<void> {
-		await this.#doc.send(
-			new DeleteCommand({
-				TableName: this.#tableName,
-				Key: { pk: this.#pk(id), sk: this.#sk() },
-			}),
-		);
+		await this.#doc.delete({
+			TableName: this.#tableName,
+			Key: { pk: this.#pk(id), sk: this.#sk() },
+		});
 	}
 
 	async revokeByGrantId(grantId: string): Promise<void> {
-		const result = await this.#doc.send(
-			new QueryCommand({
-				TableName: this.#tableName,
-				IndexName: "grantIdIndex",
-				KeyConditionExpression: "grantId = :grantId",
-				ExpressionAttributeValues: { ":grantId": grantId },
-			}),
-		);
+		const result = await this.#doc.query({
+			TableName: this.#tableName,
+			IndexName: "grantIdIndex",
+			KeyConditionExpression: "grantId = :grantId",
+			ExpressionAttributeValues: { ":grantId": grantId },
+		});
 
 		const items = (result.Items ?? []) as StoredItem[];
 		await Promise.all(
 			items.map((item) =>
-				this.#doc.send(
-					new DeleteCommand({
-						TableName: this.#tableName,
-						Key: { pk: item.pk, sk: item.sk },
-					}),
-				),
+				this.#doc.delete({
+					TableName: this.#tableName,
+					Key: { pk: item.pk, sk: item.sk },
+				}),
 			),
 		);
 	}
 
 	async consume(id: string): Promise<void> {
-		await this.#doc.send(
-			new UpdateCommand({
-				TableName: this.#tableName,
-				Key: { pk: this.#pk(id), sk: this.#sk() },
-				UpdateExpression: "SET payload.consumed = :consumed",
-				ExpressionAttributeValues: {
-					":consumed": Math.floor(Date.now() / 1000),
-				},
-			}),
-		);
+		await this.#doc.update({
+			TableName: this.#tableName,
+			Key: { pk: this.#pk(id), sk: this.#sk() },
+			UpdateExpression: "SET payload.consumed = :consumed",
+			ExpressionAttributeValues: {
+				":consumed": Math.floor(Date.now() / 1000),
+			},
+		});
 	}
 }
