@@ -1,20 +1,20 @@
+import type Provider from "oidc-provider";
 import { requireSameOrigin } from "@/adapter/validation/same-origin";
-import { requireCurrentInteraction } from "@/adapter/validation/uid";
-import { ConsentDetails, InteractionParams } from "@/application/dto/interaction/interaction";
-import { InteractionRouterContext } from "@/application/type/context";
+import { checkInteractionUidMatches } from "@/adapter/validation/uid";
+import { parseConsentDetails, parseInteractionParams } from "@/application/dto/interaction/interaction";
+import type { InteractionRouterContext } from "@/application/type/context";
 import { AppError, ErrorCodes } from "@/http/app-error";
-import Provider from "oidc-provider";
 
 export const interactionConsentUseCase = async (input: { provider: Provider; ctx: InteractionRouterContext }) => {
 	const { provider, ctx } = input;
 	requireSameOrigin(ctx);
 	const details = await provider.interactionDetails(ctx.req, ctx.res);
-	requireCurrentInteraction(ctx, details.uid);
+	checkInteractionUidMatches(details.uid, ctx.params.uid);
 	if (details.prompt.name !== "consent") {
 		throw new AppError(400, ErrorCodes.consentNotRequired, "The current interaction does not require consent");
 	}
-	const params = details.params as InteractionParams;
-	const consentDetails = details.prompt.details as ConsentDetails;
+	const params = parseInteractionParams(details.params);
+	const consentDetails = parseConsentDetails(details.prompt.details);
 	const accountId = details.session?.accountId;
 	if (!accountId) {
 		throw new AppError(400, ErrorCodes.unauthenticatedConsent, "The consent interaction has no authenticated account");
