@@ -5,11 +5,11 @@ import { AuthMethod } from "@/domain/auth-method";
 import Provider from "oidc-provider";
 
 export const interactionContextUseCase = async (input: {
-	provider: Provider,
-	ctx: InteractionRouterContext,
-	authMethod: AuthMethod,
+	provider: Provider;
+	ctx: InteractionRouterContext;
+	authMethod: AuthMethod;
 }) => {
-  const { provider, ctx, authMethod } = input;
+	const { provider, ctx, authMethod } = input;
 
 	const details = await provider.interactionDetails(ctx.req, ctx.res);
 
