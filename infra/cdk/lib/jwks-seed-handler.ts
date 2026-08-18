@@ -1,17 +1,9 @@
 import { generateKeyPairSync, randomUUID } from "node:crypto";
-import {
-	GetSecretValueCommand,
-	PutSecretValueCommand,
-	SecretsManagerClient,
-} from "@aws-sdk/client-secrets-manager";
+import { GetSecretValueCommand, PutSecretValueCommand, SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 
 function isJwks(value: unknown): value is { keys: unknown[] } {
 	return (
-		typeof value === "object" &&
-		value !== null &&
-		"keys" in value &&
-		Array.isArray(value.keys) &&
-		value.keys.length > 0
+		typeof value === "object" && value !== null && "keys" in value && Array.isArray(value.keys) && value.keys.length > 0
 	);
 }
 
@@ -23,9 +15,7 @@ export async function handler(): Promise<void> {
 	}
 
 	const client = new SecretsManagerClient({});
-	const current = await client.send(
-		new GetSecretValueCommand({ SecretId: secretArn }),
-	);
+	const current = await client.send(new GetSecretValueCommand({ SecretId: secretArn }));
 
 	try {
 		const parsed: unknown = JSON.parse(current.SecretString ?? "");

@@ -6,11 +6,7 @@ type InteractionShellProps = {
 	children: ReactNode;
 };
 
-export function InteractionShell({
-	title,
-	clientName,
-	children,
-}: InteractionShellProps) {
+export function InteractionShell({ title, clientName, children }: InteractionShellProps) {
 	return (
 		<main className="card">
 			<p className="eyebrow">PASSKEY OIDC</p>

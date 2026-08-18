@@ -6,8 +6,6 @@ export type DynamoOidcAdapterOptions = {
 	tableName: string;
 	clientConfig?: DynamoDBClientConfig;
 };
-export function createDynamoOidcAdapterFactory(
-	options: DynamoOidcAdapterOptions,
-): AdapterFactory {
+export function createDynamoOidcAdapterFactory(options: DynamoOidcAdapterOptions): AdapterFactory {
 	return (name: string) => new DynamoOidcAdapter(name, options);
 }

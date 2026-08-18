@@ -7,10 +7,7 @@ function interactionApiUrl(uid: string, action?: "login" | "confirm") {
 	return action ? `${base}/${action}` : `${base}/context`;
 }
 
-async function readApiError(
-	response: Response,
-	fallback: string,
-): Promise<Error> {
+async function readApiError(response: Response, fallback: string): Promise<Error> {
 	let body: ApiErrorBody | undefined;
 	try {
 		body = (await response.json()) as ApiErrorBody;
@@ -28,10 +25,7 @@ export async function fetchInteractionContext(uid: string) {
 		credentials: "same-origin",
 	});
 	if (!response.ok) {
-		throw await readApiError(
-			response,
-			"認証セッションを読み込めませんでした。",
-		);
+		throw await readApiError(response, "認証セッションを読み込めませんでした。");
 	}
 	return (await response.json()) as InteractionContext;
 }

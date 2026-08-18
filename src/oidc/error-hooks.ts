@@ -1,26 +1,14 @@
-import type {
-	Configuration,
-	KoaContextWithOIDC,
-	Provider,
-} from "oidc-provider";
+import type { Configuration, KoaContextWithOIDC, Provider } from "oidc-provider";
 import { isProduction } from "@/infrastructure/env.js";
 import { logError, logWarn } from "@/utils/logger.js";
 
-export const renderOidcError: NonNullable<Configuration["renderError"]> = (
-	ctx,
-	out,
-	error,
-) => {
+export const renderOidcError: NonNullable<Configuration["renderError"]> = (ctx, out, error) => {
 	ctx.type = "application/json";
 	ctx.body = {
 		error: out.error,
 		error_description:
-			isProduction() && out.error === "server_error"
-				? "oops! something went wrong"
-				: out.error_description,
-		...(!isProduction() && error instanceof Error
-			? { debug: { name: error.name, message: error.message } }
-			: {}),
+			isProduction() && out.error === "server_error" ? "oops! something went wrong" : out.error_description,
+		...(!isProduction() && error instanceof Error ? { debug: { name: error.name, message: error.message } } : {}),
 	};
 };
 

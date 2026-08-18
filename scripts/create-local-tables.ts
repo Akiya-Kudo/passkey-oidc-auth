@@ -83,9 +83,7 @@ await main();
 
 function throwIfUndefined<T>(value: T | undefined): T {
 	if (!value) {
-		throw new Error(
-			"required environment variable is not set, please place .env file in the root directory",
-		);
+		throw new Error("required environment variable is not set, please place .env file in the root directory");
 	}
 	return value;
 }

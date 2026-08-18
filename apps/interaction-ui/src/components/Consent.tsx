@@ -2,9 +2,7 @@ import { consentActionUrl } from "../api/interactions";
 import type { InteractionContext } from "../types/interaction";
 
 export function Consent({ interaction }: { interaction: InteractionContext }) {
-	const scopes = interaction.missingScopes.length
-		? interaction.missingScopes
-		: interaction.scopes;
+	const scopes = interaction.missingScopes.length ? interaction.missingScopes : interaction.scopes;
 
 	return (
 		<section>

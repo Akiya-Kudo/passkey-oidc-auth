@@ -32,4 +32,8 @@ export class AuthMethod {
 	static fromString(methods: string): AuthMethod {
 		return new AuthMethod(AuthMethod.validateString(methods));
 	}
+
+	toJSON(): AuthMethodType[] {
+		return this.methods;
+	}
 }

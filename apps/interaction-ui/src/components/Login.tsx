@@ -11,9 +11,7 @@ export function Login({ uid }: { uid: string }) {
 		try {
 			await submitLogin(uid);
 		} catch (cause) {
-			setError(
-				cause instanceof Error ? cause.message : "パスキー認証に失敗しました。",
-			);
+			setError(cause instanceof Error ? cause.message : "パスキー認証に失敗しました。");
 		} finally {
 			setSubmitting(false);
 		}

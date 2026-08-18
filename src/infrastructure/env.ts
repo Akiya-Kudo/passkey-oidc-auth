@@ -26,18 +26,15 @@ export const Environments: AppEnvs = {
 	issuer: parseEnv("ISSUER", process.env.ISSUER),
 	oidcTableName: parseEnv("OIDC_TABLE_NAME", process.env.OIDC_TABLE_NAME),
 	awsRegion: parseEnv("AWS_REGION", process.env.AWS_REGION),
-	dynamodbEndpoint: parseEnv(
-		"DYNAMODB_ENDPOINT",
-		process.env.DYNAMODB_ENDPOINT,
-		{ optional: true },
-	),
+	dynamodbEndpoint: parseEnv("DYNAMODB_ENDPOINT", process.env.DYNAMODB_ENDPOINT, {
+		optional: true,
+	}),
 	jwksSecretArn: parseEnv("JWKS_SECRET_ARN", process.env.JWKS_SECRET_ARN, {
 		optional: true,
 	}),
-	cookieKeys: (
-		parseEnv("COOKIE_KEYS", process.env.COOKIE_KEYS, { optional: true }) ??
-		"local-dev-cookie-key"
-	).split(","),
+	cookieKeys: (parseEnv("COOKIE_KEYS", process.env.COOKIE_KEYS, { optional: true }) ?? "local-dev-cookie-key").split(
+		",",
+	),
 	localIdpPort: parseEnv("LOCAL_IDP_PORT", process.env.LOCAL_IDP_PORT, {
 		type: "number",
 		optional: true,
@@ -59,9 +56,10 @@ export const Environments: AppEnvs = {
 			optional: true,
 		}) ?? "http://localhost:8080/cb"
 	).split(","),
-	authMethod: parseEnv("AUTH_METHOD", process.env.AUTH_METHOD, {
-		optional: true,
-	}) ?? "password",
+	authMethod:
+		parseEnv("AUTH_METHOD", process.env.AUTH_METHOD, {
+			optional: true,
+		}) ?? "password",
 };
 
 export function isProduction(): boolean {

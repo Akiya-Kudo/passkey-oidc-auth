@@ -1,13 +1,5 @@
-import {
-	DynamoDBClient,
-	type DynamoDBClientConfig,
-} from "@aws-sdk/client-dynamodb";
-import {
-	DynamoDBDocumentClient,
-	GetCommand,
-	PutCommand,
-	type TranslateConfig,
-} from "@aws-sdk/lib-dynamodb";
+import { DynamoDBClient, type DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, PutCommand, type TranslateConfig } from "@aws-sdk/lib-dynamodb";
 import type { UserRepository } from "@/domain/ports.js";
 import type { User, UserId } from "@/domain/user.js";
 
@@ -24,13 +16,10 @@ export class DynamoUserRepository implements UserRepository {
 
 	constructor(options: DynamoUserRepositoryOptions) {
 		this.#tableName = options.tableName;
-		this.#doc = DynamoDBDocumentClient.from(
-			new DynamoDBClient(options.clientConfig ?? {}),
-			{
-				marshallOptions: { removeUndefinedValues: true },
-				...options.documentClientConfig,
-			},
-		);
+		this.#doc = DynamoDBDocumentClient.from(new DynamoDBClient(options.clientConfig ?? {}), {
+			marshallOptions: { removeUndefinedValues: true },
+			...options.documentClientConfig,
+		});
 	}
 
 	async findById(id: UserId): Promise<User | null> {

@@ -23,10 +23,7 @@ const USER_MESSAGES: Record<string, string> = {
 	invalid_interaction_url: "認証用の URL が正しくありません。",
 };
 
-export function userMessageFor(
-	body: ApiErrorBody | undefined,
-	fallback: string,
-): string {
+export function userMessageFor(body: ApiErrorBody | undefined, fallback: string): string {
 	if (!body) {
 		return fallback;
 	}

@@ -29,12 +29,7 @@ export class AppError extends Error {
 	readonly code: ErrorCode;
 	readonly expose: boolean;
 
-	constructor(
-		status: number,
-		code: ErrorCode,
-		message: string,
-		options?: { expose?: boolean },
-	) {
+	constructor(status: number, code: ErrorCode, message: string, options?: { expose?: boolean }) {
 		super(message);
 		this.name = "AppError";
 		this.status = status;

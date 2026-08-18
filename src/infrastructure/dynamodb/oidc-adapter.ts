@@ -37,12 +37,9 @@ export class DynamoOidcAdapter implements Adapter {
 	constructor(name: string, options: DynamoOidcAdapterOptions) {
 		this.#name = name;
 		this.#tableName = options.tableName;
-		this.#doc = DynamoDBDocument.from(
-			new DynamoDBClient(options.clientConfig ?? {}),
-			{
-				marshallOptions: { removeUndefinedValues: true },
-			},
-		);
+		this.#doc = DynamoDBDocument.from(new DynamoDBClient(options.clientConfig ?? {}), {
+			marshallOptions: { removeUndefinedValues: true },
+		});
 	}
 
 	#pk(id: string) {
@@ -53,11 +50,7 @@ export class DynamoOidcAdapter implements Adapter {
 		return "OIDC";
 	}
 
-	async upsert(
-		id: string,
-		payload: AdapterPayload,
-		expiresIn?: number,
-	): Promise<void> {
+	async upsert(id: string, payload: AdapterPayload, expiresIn?: number): Promise<void> {
 		const item: StoredItem = {
 			pk: this.#pk(id),
 			sk: this.#sk(),

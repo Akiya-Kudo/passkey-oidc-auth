@@ -53,11 +53,7 @@ function serializeError(err: unknown): SerializedError {
 		serialized.stack = err.stack;
 	}
 
-	if (
-		"$metadata" in err &&
-		err.$metadata &&
-		typeof err.$metadata === "object"
-	) {
+	if ("$metadata" in err && err.$metadata && typeof err.$metadata === "object") {
 		const metadata = err.$metadata as {
 			httpStatusCode?: number;
 			requestId?: string;

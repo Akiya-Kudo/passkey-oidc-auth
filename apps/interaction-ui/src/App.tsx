@@ -20,15 +20,11 @@ export function App() {
 					setInteraction(context);
 				})
 				.catch((cause: unknown) => {
-					setError(
-						cause instanceof Error ? cause.message : "予期しないエラーです。",
-					);
+					setError(cause instanceof Error ? cause.message : "予期しないエラーです。");
 				})
 				.finally(() => setIsLoading(false));
 		} catch (cause) {
-			setError(
-				cause instanceof Error ? cause.message : "予期しないエラーです。",
-			);
+			setError(cause instanceof Error ? cause.message : "予期しないエラーです。");
 			setIsLoading(false);
 		}
 	}, []);
@@ -37,9 +33,7 @@ export function App() {
 		return <StatusCard>読み込み中…</StatusCard>;
 	}
 	if (error || !interaction) {
-		return (
-			<StatusCard error>{error ?? "認証セッションがありません。"}</StatusCard>
-		);
+		return <StatusCard error>{error ?? "認証セッションがありません。"}</StatusCard>;
 	}
 
 	return (
@@ -47,11 +41,7 @@ export function App() {
 			title={interaction.prompt === "consent" ? "アクセスの確認" : "サインイン"}
 			clientName={interaction.client.name}
 		>
-			{interaction.prompt === "consent" ? (
-				<Consent interaction={interaction} />
-			) : (
-				<Login uid={interaction.uid} />
-			)}
+			{interaction.prompt === "consent" ? <Consent interaction={interaction} /> : <Login uid={interaction.uid} />}
 		</InteractionShell>
 	);
 }

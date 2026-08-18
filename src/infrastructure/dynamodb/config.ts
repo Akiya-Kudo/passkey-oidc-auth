@@ -5,10 +5,7 @@ export type CreateDynamoDBClientOptions = {
 	region: string;
 };
 
-export function createDynamoDBClientConfig({
-	endpoint,
-	region,
-}: CreateDynamoDBClientOptions): DynamoDBClientConfig {
+export function createDynamoDBClientConfig({ endpoint, region }: CreateDynamoDBClientOptions): DynamoDBClientConfig {
 	const config: DynamoDBClientConfig = { region };
 
 	// ローカル開発時

@@ -140,10 +140,7 @@ export class IdpStack extends cdk.Stack {
 
 		const httpApi = new apigwv2.HttpApi(this, "IdpHttpApi", {
 			apiName: "passkey-oidc-idp",
-			defaultIntegration: new apigwIntegrations.HttpLambdaIntegration(
-				"OidcIntegration",
-				oidcFn,
-			),
+			defaultIntegration: new apigwIntegrations.HttpLambdaIntegration("OidcIntegration", oidcFn),
 		});
 
 		const interactionUiBucket = new s3.Bucket(this, "InteractionUiBucket", {
@@ -161,17 +158,12 @@ export class IdpStack extends cdk.Stack {
 			],
 			destinationBucket: interactionUiBucket,
 			destinationKeyPrefix: "interaction",
-			cacheControl: [
-				s3deploy.CacheControl.noCache(),
-				s3deploy.CacheControl.mustRevalidate(),
-			],
+			cacheControl: [s3deploy.CacheControl.noCache(), s3deploy.CacheControl.mustRevalidate()],
 			prune: false,
 		});
 
 		new s3deploy.BucketDeployment(this, "DeployInteractionUiAssets", {
-			sources: [
-				s3deploy.Source.asset(path.join(interactionUiBuildDir, "assets")),
-			],
+			sources: [s3deploy.Source.asset(path.join(interactionUiBuildDir, "assets"))],
 			destinationBucket: interactionUiBucket,
 			destinationKeyPrefix: "interaction/assets",
 			cacheControl: [
@@ -181,31 +173,22 @@ export class IdpStack extends cdk.Stack {
 			],
 		});
 
-		const apiOrigin = new origins.HttpOrigin(
-			cdk.Fn.select(2, cdk.Fn.split("/", httpApi.apiEndpoint)),
-			{ protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY },
-		);
-		const interactionUiOrigin =
-			origins.S3BucketOrigin.withOriginAccessControl(interactionUiBucket);
-		const interactionUiCachePolicy = new cloudfront.CachePolicy(
-			this,
-			"InteractionUiCachePolicy",
-			{
-				cookieBehavior: cloudfront.CacheCookieBehavior.none(),
-				headerBehavior: cloudfront.CacheHeaderBehavior.none(),
-				queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
-				minTtl: cdk.Duration.seconds(0),
-				defaultTtl: cdk.Duration.days(1),
-				maxTtl: cdk.Duration.days(365),
-				enableAcceptEncodingBrotli: true,
-				enableAcceptEncodingGzip: true,
-			},
-		);
-		const interactionSpaRewrite = new cloudfront.Function(
-			this,
-			"InteractionSpaRewrite",
-			{
-				code: cloudfront.FunctionCode.fromInline(`
+		const apiOrigin = new origins.HttpOrigin(cdk.Fn.select(2, cdk.Fn.split("/", httpApi.apiEndpoint)), {
+			protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+		});
+		const interactionUiOrigin = origins.S3BucketOrigin.withOriginAccessControl(interactionUiBucket);
+		const interactionUiCachePolicy = new cloudfront.CachePolicy(this, "InteractionUiCachePolicy", {
+			cookieBehavior: cloudfront.CacheCookieBehavior.none(),
+			headerBehavior: cloudfront.CacheHeaderBehavior.none(),
+			queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
+			minTtl: cdk.Duration.seconds(0),
+			defaultTtl: cdk.Duration.days(1),
+			maxTtl: cdk.Duration.days(365),
+			enableAcceptEncodingBrotli: true,
+			enableAcceptEncodingGzip: true,
+		});
+		const interactionSpaRewrite = new cloudfront.Function(this, "InteractionSpaRewrite", {
+			code: cloudfront.FunctionCode.fromInline(`
 function handler(event) {
   var request = event.request;
   if (request.uri.indexOf("/interaction/assets/") !== 0) {
@@ -213,25 +196,21 @@ function handler(event) {
   }
   return request;
 }`),
-			},
-		);
+		});
 
 		const distribution = new cloudfront.Distribution(this, "AuthDistribution", {
 			defaultBehavior: {
 				origin: apiOrigin,
 				viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
 				cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
-				originRequestPolicy:
-					cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+				originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
 			},
 			additionalBehaviors: {
 				"/interaction/*": {
 					origin: interactionUiOrigin,
-					viewerProtocolPolicy:
-						cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+					viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
 					cachePolicy: interactionUiCachePolicy,
-					responseHeadersPolicy:
-						cloudfront.ResponseHeadersPolicy.SECURITY_HEADERS,
+					responseHeadersPolicy: cloudfront.ResponseHeadersPolicy.SECURITY_HEADERS,
 					functionAssociations: [
 						{
 							eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,

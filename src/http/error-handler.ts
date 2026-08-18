@@ -2,12 +2,7 @@ import type { Middleware } from "koa";
 import { errors as oidcErrors } from "oidc-provider";
 import { isProduction } from "@/infrastructure/env.js";
 import { logError, logWarn } from "@/utils/logger.js";
-import {
-	AppError,
-	ErrorCodes,
-	type PublicErrorBody,
-	type PublicErrorKind,
-} from "./app-error.js";
+import { AppError, ErrorCodes, type PublicErrorBody, type PublicErrorKind } from "./app-error.js";
 
 export const REQUEST_ID_HEADER = "x-request-id";
 
@@ -28,30 +23,16 @@ function httpStatus(err: unknown): number {
 	return 500;
 }
 
-function hasNumber<K extends string>(
-	err: unknown,
-	key: K,
-): err is Record<K, number> {
-	return (
-		typeof err === "object" &&
-		err !== null &&
-		key in err &&
-		typeof (err as Record<K, unknown>)[key] === "number"
-	);
+function hasNumber<K extends string>(err: unknown, key: K): err is Record<K, number> {
+	return typeof err === "object" && err !== null && key in err && typeof (err as Record<K, unknown>)[key] === "number";
 }
 
 function oidcErrorDescription(err: unknown): string | undefined {
-	if (
-		typeof err !== "object" ||
-		err === null ||
-		!("error_description" in err)
-	) {
+	if (typeof err !== "object" || err === null || !("error_description" in err)) {
 		return undefined;
 	}
 
-	return typeof err.error_description === "string"
-		? err.error_description
-		: undefined;
+	return typeof err.error_description === "string" ? err.error_description : undefined;
 }
 
 function withDebug(body: PublicErrorBody, err: unknown): PublicErrorBody {

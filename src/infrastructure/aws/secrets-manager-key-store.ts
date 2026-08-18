@@ -1,7 +1,4 @@
-import {
-	GetSecretValueCommand,
-	SecretsManagerClient,
-} from "@aws-sdk/client-secrets-manager";
+import { GetSecretValueCommand, SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import type { KeyStore } from "@/domain/ports.js";
 
 export type SecretsManagerKeyStoreOptions = {
@@ -46,9 +43,7 @@ export class SecretsManagerKeyStore implements KeyStore {
 
 	async getJwks(): Promise<Jwks> {
 		if (!this.#jwks) {
-			const result = await this.#client.send(
-				new GetSecretValueCommand({ SecretId: this.#secretArn }),
-			);
+			const result = await this.#client.send(new GetSecretValueCommand({ SecretId: this.#secretArn }));
 			if (!result.SecretString) {
 				throw new Error(`JWKS secret ${this.#secretArn} has no SecretString`);
 			}

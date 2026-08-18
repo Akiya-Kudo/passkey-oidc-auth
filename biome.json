@@ -8,18 +8,12 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": [
-			"**",
-			"!**/node_modules",
-			"!**/cdk.out",
-			"!**/dist",
-			"!**/.next",
-			"!**/pnpm-lock.yaml"
-		]
+		"includes": ["**", "!**/node_modules", "!**/cdk.out", "!**/dist", "!**/.next", "!**/pnpm-lock.yaml"]
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab"
+		"indentStyle": "tab",
+		"lineWidth": 120
 	},
 	"javascript": {
 		"formatter": {

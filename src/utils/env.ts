@@ -2,15 +2,11 @@ type EnvKind = "string" | "number";
 
 type EnvValue<K extends EnvKind> = K extends "number" ? number : string;
 
-type ParsedEnv<
-	K extends EnvKind,
-	Optional extends boolean,
-> = Optional extends true ? EnvValue<K> | undefined : EnvValue<K>;
+type ParsedEnv<K extends EnvKind, Optional extends boolean> = Optional extends true
+	? EnvValue<K> | undefined
+	: EnvValue<K>;
 
-export function parseEnv<
-	K extends EnvKind = "string",
-	Optional extends boolean = false,
->(
+export function parseEnv<K extends EnvKind = "string", Optional extends boolean = false>(
 	name: string,
 	value: string | undefined,
 	options?: { type?: K; optional?: Optional },
@@ -36,18 +32,14 @@ export function parseEnv<
 	return value as ParsedEnv<K, Optional>;
 }
 
-/** 
- * カンマ区切りを許可リテラル配列へ。呼び出し時に `parseCsvEnum<T>(...)` で型を指定する。 
+/**
+ * カンマ区切りを許可リテラル配列へ。呼び出し時に `parseCsvEnum<T>(...)` で型を指定する。
  * @param raw - カンマ区切りの文字列
  * @param allowed - 許可されたリテラル配列
  * @param options - オプション
  * @returns パースされたリテラル配列
-*/
-export function parseCsvEnum<T extends string>(
-	raw: string,
-	allowed: readonly T[],
-	options?: { name?: string },
-): T[] {
+ */
+export function parseCsvEnum<T extends string>(raw: string, allowed: readonly T[], options?: { name?: string }): T[] {
 	const label = options?.name ?? "value";
 	const parsed: T[] = [];
 

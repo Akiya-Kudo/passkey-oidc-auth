@@ -1,12 +1,5 @@
-import {
-	DynamoDBClient,
-	type DynamoDBClientConfig,
-} from "@aws-sdk/client-dynamodb";
-import {
-	DynamoDBDocumentClient,
-	GetCommand,
-	PutCommand,
-} from "@aws-sdk/lib-dynamodb";
+import { DynamoDBClient, type DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import type { OAuthClient, OAuthClientId } from "@/domain/client.js";
 import type { ClientRepository } from "@/domain/ports.js";
 
@@ -27,10 +20,9 @@ export class DynamoClientRepository implements ClientRepository {
 		this.#tableName = options.tableName;
 		this.#doc =
 			options.client ??
-			DynamoDBDocumentClient.from(
-				new DynamoDBClient(options.clientConfig ?? {}),
-				{ marshallOptions: { removeUndefinedValues: true } },
-			);
+			DynamoDBDocumentClient.from(new DynamoDBClient(options.clientConfig ?? {}), {
+				marshallOptions: { removeUndefinedValues: true },
+			});
 	}
 
 	async findById(id: OAuthClientId): Promise<OAuthClient | null> {
