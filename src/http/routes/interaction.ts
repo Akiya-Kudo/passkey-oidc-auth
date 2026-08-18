@@ -62,6 +62,7 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
 				details.prompt.name === "consent"
 					? (consentDetails.missingOIDCScope ?? [])
 					: [],
+			authMethod: Environments.authMethod,
 		};
 	});
 

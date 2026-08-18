@@ -18,6 +18,7 @@ export type AppEnvs = {
 	/** TODO: Secrets Manager 等へ移す（平文は学習用） */
 	oidcClientSecret: string;
 	oidcRedirectUris: string[];
+	authMethod: string;
 };
 
 export const Environments: AppEnvs = {
@@ -58,6 +59,9 @@ export const Environments: AppEnvs = {
 			optional: true,
 		}) ?? "http://localhost:8080/cb"
 	).split(","),
+	authMethod: parseEnv("AUTH_METHOD", process.env.AUTH_METHOD, {
+		optional: true,
+	}) ?? "password",
 };
 
 export function isProduction(): boolean {

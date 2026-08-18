@@ -35,3 +35,36 @@ export function parseEnv<
 
 	return value as ParsedEnv<K, Optional>;
 }
+
+/** 
+ * カンマ区切りを許可リテラル配列へ。呼び出し時に `parseCsvEnum<T>(...)` で型を指定する。 
+ * @param raw - カンマ区切りの文字列
+ * @param allowed - 許可されたリテラル配列
+ * @param options - オプション
+ * @returns パースされたリテラル配列
+*/
+export function parseCsvEnum<T extends string>(
+	raw: string,
+	allowed: readonly T[],
+	options?: { name?: string },
+): T[] {
+	const label = options?.name ?? "value";
+	const parsed: T[] = [];
+
+	for (const part of raw.split(",").map((token) => token.trim())) {
+		if (part.length === 0) {
+			continue;
+		}
+		const match = allowed.find((candidate) => candidate === part);
+		if (match === undefined) {
+			throw new Error(`Invalid ${label}: ${part}`);
+		}
+		parsed.push(match);
+	}
+
+	if (parsed.length === 0) {
+		throw new Error(`Invalid ${label}: empty`);
+	}
+
+	return parsed;
+}
