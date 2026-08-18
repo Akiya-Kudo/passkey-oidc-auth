@@ -4,7 +4,7 @@ import { Environments } from "@/infrastructure/env.js";
 import { bindOidcErrorHandlers } from "@/oidc/error-hooks.js";
 import { createProvider } from "@/oidc/provider.js";
 import { type AppState, registerProcessErrorHandlers, requestIdAndErrorHandler } from "./error-handler.js";
-import { bindCustomRoutes } from "../adapter/routes/routes.js";
+import { bindCustomRoutes } from "../adapter/routes.js";
 
 export async function createOidcApp(): Promise<{
 	app: Koa<AppState>;
