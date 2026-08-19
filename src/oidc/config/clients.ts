@@ -10,6 +10,7 @@ export const OidcClients: ClientMetadata[] = [
 	{
 		client_id: Environments.oidcClientId,
 		client_secret: Environments.oidcClientSecret,
+		client_name: "Sample Client",
 		redirect_uris: Environments.oidcRedirectUris,
 		grant_types: ["authorization_code"],
 		response_types: ["code"],

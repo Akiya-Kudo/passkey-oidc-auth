@@ -1,4 +1,4 @@
-import { InteractionRouterContext } from "@/application/type/context";
+import type { InteractionRouterContext } from "@/application/type/context";
 import { AppError, ErrorCodes } from "@/http/app-error";
 import { Environments } from "@/infrastructure/env";
 

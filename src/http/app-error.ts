@@ -7,6 +7,8 @@ export const ErrorCodes = {
 	consentNotRequired: "consent_not_required",
 	unauthenticatedConsent: "unauthenticated_consent",
 	notImplemented: "not_implemented",
+	interactionContextClientNotFound: "interaction_context_client_not_found",
+	unsupportedInteractionPrompt: "unsupported_interaction_prompt",
 } as const;
 
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];

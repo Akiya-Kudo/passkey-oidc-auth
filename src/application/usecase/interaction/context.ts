@@ -1,5 +1,7 @@
 import type Provider from "oidc-provider";
-import { checkInteractionUidMatches } from "@/adapter/validation/uid";
+import { validateClientExists } from "@/adapter/validation/client";
+import { validatePrompt } from "@/adapter/validation/prompt";
+import { validateUidMatches } from "@/adapter/validation/uid";
 import { parseConsentDetails, parseInteractionParams } from "@/application/dto/interaction/interaction";
 import type { InteractionRouterContext } from "@/application/type/context";
 import type { AuthMethod } from "@/domain/auth-method";
@@ -8,20 +10,14 @@ import type { AuthMethod } from "@/domain/auth-method";
  * Interaction context Usecase
  *
  * Scenario
- * - Invoked by Interaction UI on client side when no session is established yet by an authorization request
- *
- * Process Flow
- * 1. Load the current interaction from oidc-provider (via Interaction cookie) with interactionDetails
- * 2. Ensure the URL :uid matches the interaction uid (reject mismatched / stale sessions)
- * 3. Resolve the OIDC client from params.client_id
- * 4. Read the current prompt name (login | consent) so the UI can choose the right screen
- * 5. Collect requested scopes; if prompt is consent, also collect missingOIDCScope for the consent UI
- * 6. Attach configured auth methods so the UI can render password / passkey controls
- * 7. Respond with Cache-Control: no-store and a JSON body (uid, prompt, client, scopes, missingScopes, authMethod)
+ * - Called by Interaction UI after oidc-provider redirects to /interaction/{uid}.
+ * - One Interaction carries a single prompt at a time (login then consent are sequential
+ *   Interactions if both are needed). This endpoint only reads that current prompt for the UI.
  *
  * Notes
- * - Read-only: do not call interactionFinished here (login/consent completion is other endpoints)
- * - Current body assembly below is a provisional stub aligned with the Interaction UI contract
+ * - prompt.name / reasons are oidc-provider policy results, not a copy of the authorize
+ *   request's prompt query param. We only expose name for screen switching.
+ * - Do not re-check session or grant here; interactionDetails already reflects that decision.
  */
 export const interactionContextUseCase = async (input: {
 	provider: Provider;
@@ -33,20 +29,26 @@ export const interactionContextUseCase = async (input: {
 	const { uid, prompt, params: rawParams } = await provider.interactionDetails(ctx.req, ctx.res);
 
 	// return 404 if the UID in the cookie doesn't match the UID in the path params
-	checkInteractionUidMatches(uid, ctx.params.uid);
+	validateUidMatches(uid, ctx.params.uid);
+
+	validatePrompt(prompt.name);
 
 	const params = parseInteractionParams(rawParams);
 	const client = await provider.Client.find(params.client_id);
-	const missingScopes =
-		prompt.name === "consent" ? (parseConsentDetails(prompt.details).missingOIDCScope ?? []) : [];
+	validateClientExists(client);
 
+	// if prompt is consent, collect missingOIDCScope for the consent UI display
+	const missingScopes = prompt.name === "consent" ? (parseConsentDetails(prompt.details).missingOIDCScope ?? []) : [];
+
+	// set no-store to prevent persistent caching of in-progress content
 	ctx.set("Cache-Control", "no-store");
+
 	ctx.body = {
 		uid,
 		prompt: prompt.name,
 		client: {
 			id: params.client_id,
-			name: client?.clientName ?? client?.clientId ?? params.client_id,
+			name: client.clientName,
 		},
 		scopes: (params.scope ?? "").split(" ").filter(Boolean),
 		missingScopes,

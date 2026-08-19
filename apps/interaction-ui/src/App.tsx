@@ -36,12 +36,17 @@ export function App() {
 		return <StatusCard error>{error ?? "認証セッションがありません。"}</StatusCard>;
 	}
 
+	if (interaction.prompt === "consent") {
+		return (
+			<InteractionShell title="アクセスの確認" clientName={interaction.client.name}>
+				<Consent interaction={interaction} />
+			</InteractionShell>
+		);
+	}
+
 	return (
-		<InteractionShell
-			title={interaction.prompt === "consent" ? "アクセスの確認" : "サインイン"}
-			clientName={interaction.client.name}
-		>
-			{interaction.prompt === "consent" ? <Consent interaction={interaction} /> : <Login uid={interaction.uid} />}
+		<InteractionShell title="サインイン" clientName={interaction.client.name}>
+			<Login uid={interaction.uid} />
 		</InteractionShell>
 	);
 }

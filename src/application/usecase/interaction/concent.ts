@@ -1,6 +1,6 @@
 import type Provider from "oidc-provider";
 import { requireSameOrigin } from "@/adapter/validation/same-origin";
-import { checkInteractionUidMatches } from "@/adapter/validation/uid";
+import { validateUidMatches } from "@/adapter/validation/uid";
 import { parseConsentDetails, parseInteractionParams } from "@/application/dto/interaction/interaction";
 import type { InteractionRouterContext } from "@/application/type/context";
 import { AppError, ErrorCodes } from "@/http/app-error";
@@ -9,7 +9,7 @@ export const interactionConsentUseCase = async (input: { provider: Provider; ctx
 	const { provider, ctx } = input;
 	requireSameOrigin(ctx);
 	const details = await provider.interactionDetails(ctx.req, ctx.res);
-	checkInteractionUidMatches(details.uid, ctx.params.uid);
+	validateUidMatches(details.uid, ctx.params.uid);
 	if (details.prompt.name !== "consent") {
 		throw new AppError(400, ErrorCodes.consentNotRequired, "The current interaction does not require consent");
 	}

@@ -21,6 +21,8 @@ const USER_MESSAGES: Record<string, string> = {
 	unauthenticated_consent: "先にサインインしてください。",
 	not_implemented: "パスキー認証はまだ実装されていません。",
 	invalid_interaction_url: "認証用の URL が正しくありません。",
+	interaction_context_client_not_found: "連携アプリが見つかりませんでした。",
+	unsupported_interaction_prompt: "この認証手順には対応していません。",
 };
 
 export function userMessageFor(body: ApiErrorBody | undefined, fallback: string): string {
