@@ -1,5 +1,6 @@
 import { DynamoDBClient, type DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, type TranslateConfig } from "@aws-sdk/lib-dynamodb";
+import { normalizeEmail } from "@/domain/email.js";
 import type { UserRepository } from "@/domain/ports.js";
 import type { User, UserId } from "@/domain/user.js";
 
@@ -9,7 +10,18 @@ export type DynamoUserRepositoryOptions = {
 	documentClientConfig?: TranslateConfig;
 };
 
-//  TODO: Passkey Credential と同じテーブル設計に合わせて PK/SK を見直す
+type EmailIndexItem = {
+	pk: string;
+	sk: string;
+	userId: UserId;
+};
+
+/**
+ * Single-table layout (OIDC Adapter / User / Password は同じテーブル):
+ * - pk=USER#{id}  sk=PROFILE  … User
+ * - pk=EMAIL#{email} sk=UNIQUE … email → userId
+ * - pk=USER#{id}  sk=PASSWORD … PasswordCredential（別リポジトリ実装）
+ */
 export class DynamoUserRepository implements UserRepository {
 	readonly #tableName: string;
 	readonly #doc: DynamoDBDocumentClient;
@@ -32,7 +44,25 @@ export class DynamoUserRepository implements UserRepository {
 		if (!result.Item) {
 			return null;
 		}
-		return result.Item as User;
+		return toUser(result.Item);
+	}
+
+	async findByEmail(email: string): Promise<User | null> {
+		const normalized = normalizeEmail(email);
+		if (!normalized) {
+			return null;
+		}
+		const index = await this.#doc.send(
+			new GetCommand({
+				TableName: this.#tableName,
+				Key: { pk: `EMAIL#${normalized}`, sk: "UNIQUE" },
+			}),
+		);
+		const userId = (index.Item as EmailIndexItem | undefined)?.userId;
+		if (!userId) {
+			return null;
+		}
+		return this.findById(userId);
 	}
 
 	async save(user: User): Promise<void> {
@@ -46,5 +76,33 @@ export class DynamoUserRepository implements UserRepository {
 				},
 			}),
 		);
+
+		if (user.email) {
+			const normalized = normalizeEmail(user.email);
+			await this.#doc.send(
+				new PutCommand({
+					TableName: this.#tableName,
+					Item: {
+						pk: `EMAIL#${normalized}`,
+						sk: "UNIQUE",
+						userId: user.id,
+					},
+					ConditionExpression: "attribute_not_exists(pk) OR userId = :userId",
+					ExpressionAttributeValues: {
+						":userId": user.id,
+					},
+				}),
+			);
+		}
 	}
+}
+
+function toUser(item: Record<string, unknown>): User {
+	return {
+		id: String(item.id),
+		displayName: typeof item.displayName === "string" ? item.displayName : undefined,
+		email: typeof item.email === "string" ? item.email : undefined,
+		createdAt: String(item.createdAt),
+		updatedAt: String(item.updatedAt),
+	};
 }

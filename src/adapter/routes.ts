@@ -2,7 +2,7 @@ import Router from "@koa/router";
 import type { Provider } from "oidc-provider";
 import { interactionConsentUseCase } from "@/application/usecase/interaction/concent.js";
 import { interactionContextUseCase } from "@/application/usecase/interaction/context.js";
-import { interactionPasswordVerifyUseCase } from "@/application/usecase/interaction/password-verify.js";
+import { createInteractionPasswordVerifyUseCase } from "@/application/usecase/interaction/password-verify.js";
 import { AuthMethod } from "@/domain/auth-method.js";
 import type { RuntimeDeps } from "@/infrastructure/dependency.js";
 import { Environments } from "@/infrastructure/env.js";
@@ -14,6 +14,7 @@ import { Environments } from "@/infrastructure/env.js";
  */
 export function bindCustomRoutes(provider: Provider, deps: RuntimeDeps) {
 	const router = new Router();
+	const interactionPasswordVerify = createInteractionPasswordVerifyUseCase(provider, deps);
 	/**
 	 * Interaction context API
 	 */
@@ -25,11 +26,8 @@ export function bindCustomRoutes(provider: Provider, deps: RuntimeDeps) {
 	 * Interaction password login API
 	 */
 	router.post("/api/interactions/:uid/password/verify", async (ctx) => {
-		await interactionPasswordVerifyUseCase({
-			provider,
+		await interactionPasswordVerify({
 			ctx,
-			userRepository: deps.userRepository,
-			passwordCredentialRepository: deps.passwordCredentialRepository,
 		});
 	});
 
