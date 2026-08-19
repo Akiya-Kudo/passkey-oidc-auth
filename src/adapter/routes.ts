@@ -1,10 +1,10 @@
 import Router from "@koa/router";
 import type { Provider } from "oidc-provider";
-import { interactionContextUseCase } from "@/application/usecase/interaction/context.js";
-import { Environments } from "@/infrastructure/env.js";
-import { AuthMethod } from "@/domain/auth-method.js";
-import { interactionPasswordVerifyUseCase } from "@/application/usecase/interaction/password-verify.js";
 import { interactionConsentUseCase } from "@/application/usecase/interaction/concent.js";
+import { interactionContextUseCase } from "@/application/usecase/interaction/context.js";
+import { interactionPasswordVerifyUseCase } from "@/application/usecase/interaction/password-verify.js";
+import { AuthMethod } from "@/domain/auth-method.js";
+import { Environments } from "@/infrastructure/env.js";
 
 /**
  * Resister IDP application routes

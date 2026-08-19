@@ -44,9 +44,13 @@ export function App() {
 		);
 	}
 
+	if (interaction.authMethod.length === 0) {
+		return <StatusCard error>利用できるサインイン方法がありません。</StatusCard>;
+	}
+
 	return (
 		<InteractionShell title="サインイン" clientName={interaction.client.name}>
-			<Login uid={interaction.uid} />
+			<Login uid={interaction.uid} authMethod={interaction.authMethod} />
 		</InteractionShell>
 	);
 }

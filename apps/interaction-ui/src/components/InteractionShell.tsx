@@ -10,7 +10,7 @@ type InteractionShellProps = {
 export function InteractionShell({ title, clientName, children }: InteractionShellProps) {
 	return (
 		<main className="card">
-			<p className="eyebrow">PASSKEY OIDC</p>
+			<p className="eyebrow">Sample OIDC Provider</p>
 			<h1>{title}</h1>
 			<p className="client-name">{clientName?.trim() || "連携アプリ"}</p>
 			{children}
