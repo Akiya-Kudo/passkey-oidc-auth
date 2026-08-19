@@ -1,13 +1,15 @@
 import { type ApiErrorBody, userMessageFor } from "../types/api-error";
 import type { InteractionContext } from "../types/interaction";
 
-function interactionApiUrl(uid: string, action?: "login" | "password/verify" | "confirm") {
-	const encodedUid = encodeURIComponent(uid);
-	const base = `/api/interactions/${encodedUid}`;
-	return action ? `${base}/${action}` : `${base}/context`;
-}
+const interactionBaseUrl = (uid: string) => `/api/interactions/${encodeURIComponent(uid)}`;
+export const interactionUrls = {
+	context: (uid: string) => `${interactionBaseUrl(uid)}/context`,
+	login: (uid: string) => `${interactionBaseUrl(uid)}/login`,
+	passwordVerify: (uid: string) => `${interactionBaseUrl(uid)}/password/verify`,
+	confirm: (uid: string) => `${interactionBaseUrl(uid)}/confirm`,
+};
 
-async function readApiError(response: Response, fallback: string): Promise<Error> {
+export async function readApiError(response: Response, fallback: string): Promise<Error> {
 	let body: ApiErrorBody | undefined;
 	try {
 		body = (await response.json()) as ApiErrorBody;
@@ -21,7 +23,7 @@ async function readApiError(response: Response, fallback: string): Promise<Error
 }
 
 export async function fetchInteractionContext(uid: string) {
-	const response = await fetch(interactionApiUrl(uid), {
+	const response = await fetch(interactionUrls.context(uid), {
 		credentials: "same-origin",
 	});
 	if (!response.ok) {
@@ -31,7 +33,7 @@ export async function fetchInteractionContext(uid: string) {
 }
 
 export async function submitPasskeyLogin(uid: string) {
-	const response = await fetch(interactionApiUrl(uid, "login"), {
+	const response = await fetch(interactionUrls.login(uid), {
 		method: "POST",
 		credentials: "same-origin",
 	});
@@ -40,18 +42,6 @@ export async function submitPasskeyLogin(uid: string) {
 	}
 }
 
-export async function submitPasswordLogin(uid: string, credentials: { email: string; password: string }) {
-	const response = await fetch(interactionApiUrl(uid, "password/verify"), {
-		method: "POST",
-		credentials: "same-origin",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(credentials),
-	});
-	if (!response.ok) {
-		throw await readApiError(response, "パスワード認証に失敗しました。");
-	}
-}
-
 export function consentActionUrl(uid: string) {
-	return interactionApiUrl(uid, "confirm");
+	return interactionUrls.confirm(uid);
 }

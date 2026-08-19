@@ -3,14 +3,14 @@ import { PasskeyLogin } from "./PasskeyLogin";
 import { PasswordLogin } from "./PasswordLogin";
 
 export function Login({ uid, authMethod }: { uid: string; authMethod: AuthMethodType[] }) {
-	const hasPasskey = authMethod.includes("passkey");
-	const hasPassword = authMethod.includes("password");
+	const hasPasskeyLogin = authMethod.includes("passkey");
+	const hasPasswordLogin = authMethod.includes("password");
 
 	return (
 		<>
-			{hasPasskey ? <PasskeyLogin uid={uid} /> : null}
-			{hasPasskey && hasPassword ? <p className="separator">または</p> : null}
-			{hasPassword ? <PasswordLogin uid={uid} /> : null}
+			{hasPasskeyLogin ? <PasskeyLogin uid={uid} /> : null}
+			{hasPasskeyLogin && hasPasswordLogin ? <p className="separator">または</p> : null}
+			{hasPasswordLogin ? <PasswordLogin uid={uid} /> : null}
 		</>
 	);
 }

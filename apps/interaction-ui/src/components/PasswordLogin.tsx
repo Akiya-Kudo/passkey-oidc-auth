@@ -1,5 +1,5 @@
-import { type FormEvent, useState } from "react";
-import { submitPasswordLogin } from "../api/interactions";
+import { useState } from "react";
+import { submitPasswordLogin } from "../api/password";
 
 type PasswordLoginProps = { uid: string };
 
@@ -9,7 +9,7 @@ export function PasswordLogin({ uid }: PasswordLoginProps) {
 	const [error, setError] = useState<string>();
 	const [submitting, setSubmitting] = useState(false);
 
-	async function signIn(event: FormEvent<HTMLFormElement>) {
+	async function signIn(event: React.SubmitEvent<HTMLFormElement>) {
 		event.preventDefault();
 		setSubmitting(true);
 		setError(undefined);
@@ -24,10 +24,10 @@ export function PasswordLogin({ uid }: PasswordLoginProps) {
 
 	return (
 		<section>
-			<h2>パスワードでサインイン</h2>
+			<h2>Password Login</h2>
 			<form onSubmit={(event) => void signIn(event)}>
 				<label className="field" htmlFor="login-email">
-					メールアドレス
+					Email
 					<input
 						id="login-email"
 						type="email"
@@ -39,7 +39,7 @@ export function PasswordLogin({ uid }: PasswordLoginProps) {
 					/>
 				</label>
 				<label className="field" htmlFor="login-password">
-					パスワード
+					Password
 					<input
 						id="login-password"
 						type="password"
@@ -51,7 +51,7 @@ export function PasswordLogin({ uid }: PasswordLoginProps) {
 					/>
 				</label>
 				<button type="submit" disabled={submitting}>
-					{submitting ? "確認中…" : "パスワードで続行"}
+					{submitting ? "Confirming..." : "Login"}
 				</button>
 			</form>
 			{error ? <p className="error">{error}</p> : null}

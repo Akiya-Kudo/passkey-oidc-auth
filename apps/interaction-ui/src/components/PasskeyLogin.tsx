@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { submitPasskeyLogin } from "../api/interactions";
+import { submitPasskeyLogin } from "../api/api";
 
 type PasskeyLoginProps = { uid: string };
 

@@ -1,4 +1,4 @@
-import { consentActionUrl } from "../api/interactions";
+import { consentActionUrl } from "../api/api";
 import type { InteractionContext } from "../types/interaction";
 
 export function Consent({ interaction }: { interaction: InteractionContext }) {

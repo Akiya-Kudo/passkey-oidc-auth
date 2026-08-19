@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchInteractionContext } from "./api/interactions";
+import { fetchInteractionContext } from "./api/api";
 import { Consent } from "./components/Consent";
 import { InteractionShell } from "./components/InteractionShell";
 import { Login } from "./components/Login";
