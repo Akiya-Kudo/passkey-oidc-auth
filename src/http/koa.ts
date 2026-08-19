@@ -1,5 +1,6 @@
 import Koa from "koa";
 import mount from "koa-mount";
+import { createRuntimeDeps } from "@/infrastructure/dependency.js";
 import { Environments } from "@/infrastructure/env.js";
 import { bindOidcErrorHandlers } from "@/oidc/error-hooks.js";
 import { createProvider } from "@/oidc/provider.js";
@@ -10,10 +11,11 @@ export async function createOidcApp(): Promise<{
 	app: Koa<AppState>;
 }> {
 	registerProcessErrorHandlers();
-	const provider = await createProvider();
+	const deps = createRuntimeDeps();
+	const provider = await createProvider(deps);
 	bindOidcErrorHandlers(provider);
 
-	const router = bindCustomRoutes(provider);
+	const router = bindCustomRoutes(provider, deps);
 	const app = new Koa<AppState>();
 	// app.keys array of signed cookie keys. Cookie の署名検証に使用する鍵をoidc-provider と共有してMountしているkoa側も使用する
 	app.keys = Environments.cookieKeys;

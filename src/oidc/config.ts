@@ -1,13 +1,13 @@
 import type { Configuration } from "oidc-provider";
-import { createRuntimeDeps } from "@/infrastructure/dependency.js";
+import { createRuntimeDeps, type RuntimeDeps } from "@/infrastructure/dependency.js";
 import { Environments } from "@/infrastructure/env.js";
 import { createFindAccount } from "./config/account.js";
 import { OidcClients } from "./config/clients.js";
 import { OidcRoutes } from "./config/routes.js";
 import { renderOidcError } from "./error-hooks.js";
 
-export async function createConfiguration(): Promise<Configuration> {
-	const { adapter, userRepository, keyStore } = createRuntimeDeps();
+export async function createConfiguration(deps: RuntimeDeps = createRuntimeDeps()): Promise<Configuration> {
+	const { adapter, userRepository, keyStore } = deps;
 	const clients = OidcClients;
 	const routes = OidcRoutes;
 

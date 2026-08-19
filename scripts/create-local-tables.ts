@@ -8,7 +8,9 @@ import {
 /**
  * DynamoDB Local 向けに OIDC Adapter 用テーブルを作成する
  *
- * TODO: Users / Credentials 用テーブル定義を追加する
+ * Users / Password credentials use the same table via PK/SK items
+ * (USER#…/PROFILE, USER#…/PASSWORD, EMAIL#…/UNIQUE). No extra GSI required.
+ * Seed a demo user with: pnpm seed:local-user
  * Usage: pnpm tables:local
  */
 const endpoint = throwIfUndefined(process.env.DYNAMODB_ENDPOINT);

@@ -4,6 +4,7 @@ import { interactionConsentUseCase } from "@/application/usecase/interaction/con
 import { interactionContextUseCase } from "@/application/usecase/interaction/context.js";
 import { interactionPasswordVerifyUseCase } from "@/application/usecase/interaction/password-verify.js";
 import { AuthMethod } from "@/domain/auth-method.js";
+import type { RuntimeDeps } from "@/infrastructure/dependency.js";
 import { Environments } from "@/infrastructure/env.js";
 
 /**
@@ -11,7 +12,7 @@ import { Environments } from "@/infrastructure/env.js";
  * @param provider
  * @returns Router
  */
-export function bindCustomRoutes(provider: Provider) {
+export function bindCustomRoutes(provider: Provider, deps: RuntimeDeps) {
 	const router = new Router();
 	/**
 	 * Interaction context API
@@ -24,7 +25,12 @@ export function bindCustomRoutes(provider: Provider) {
 	 * Interaction password login API
 	 */
 	router.post("/api/interactions/:uid/password/verify", async (ctx) => {
-		await interactionPasswordVerifyUseCase({ provider, ctx });
+		await interactionPasswordVerifyUseCase({
+			provider,
+			ctx,
+			userRepository: deps.userRepository,
+			passwordCredentialRepository: deps.passwordCredentialRepository,
+		});
 	});
 
 	/**
