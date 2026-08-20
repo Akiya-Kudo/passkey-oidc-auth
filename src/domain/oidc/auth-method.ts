@@ -1,4 +1,4 @@
-import { parseCsvEnum } from "../utils/env.js";
+import { parseCsvEnum } from "../../utils/env.js";
 
 export type AuthMethodType = "password" | "passkey";
 

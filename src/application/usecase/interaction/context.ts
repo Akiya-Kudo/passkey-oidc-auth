@@ -1,10 +1,10 @@
 import type Provider from "oidc-provider";
+import { validateClientExists } from "@/adapter/validation/client";
 import { validatePrompt } from "@/adapter/validation/prompt";
 import { validateUidMatches } from "@/adapter/validation/uid";
 import { parseConsentDetails, parseInteractionParams } from "@/application/dto/interaction/interaction";
 import type { InteractionRouterContext } from "@/application/type/context";
-import type { AuthMethod } from "@/domain/auth-method";
-import { validateClientExists } from "@/adapter/validation/client";
+import type { AuthMethod } from "@/domain/oidc/auth-method";
 
 /**
  * Interaction context Usecase

@@ -1,7 +1,8 @@
-import type { OAuthClient, OAuthClientId } from "./client.js";
-import type { PasswordCredential } from "./credential.js";
+import type { PasswordCredential } from "./credential/credential.js";
+import type { OAuthClient, OAuthClientId } from "./oidc/client.js";
 import type { Email } from "./user/email.js";
-import type { User, UserId } from "./user/user.js";
+import type { User } from "./user/user.js";
+import type { UserId } from "./user/user-id.js";
 
 export interface UserRepository {
 	findById(id: UserId): Promise<User | null>;

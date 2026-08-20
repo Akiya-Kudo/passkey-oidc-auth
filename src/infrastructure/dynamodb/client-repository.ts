@@ -1,6 +1,6 @@
 import { DynamoDBClient, type DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
-import type { OAuthClient, OAuthClientId } from "@/domain/client.js";
+import type { OAuthClient, OAuthClientId } from "@/domain/oidc/client.js";
 import type { ClientRepository } from "@/domain/ports.js";
 
 export type DynamoClientRepositoryOptions = {

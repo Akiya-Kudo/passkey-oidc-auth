@@ -1,4 +1,4 @@
-import { getDummyPasswordHash, verifyPassword } from "@/domain/password.js";
+import { getDummyPasswordHash, verifyPassword } from "@/domain/credential/password.js";
 import type { PasswordCredentialRepository, UserRepository } from "@/domain/ports.js";
 import type { User } from "@/domain/user/user.js";
 
