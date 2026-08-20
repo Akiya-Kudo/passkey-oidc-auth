@@ -35,6 +35,8 @@ export const Environments: AppEnvs = {
 	cookieKeys: (parseEnv("COOKIE_KEYS", process.env.COOKIE_KEYS, { optional: true }) ?? "local-dev-cookie-key").split(
 		",",
 	),
+
+	
 	localIdpPort: parseEnv("LOCAL_IDP_PORT", process.env.LOCAL_IDP_PORT, {
 		type: "number",
 		optional: true,
