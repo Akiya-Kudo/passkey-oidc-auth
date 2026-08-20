@@ -2,7 +2,7 @@ import { DynamoDBClient, type DynamoDBClientConfig } from "@aws-sdk/client-dynam
 import { DynamoDBDocumentClient, GetCommand, PutCommand, type TranslateConfig } from "@aws-sdk/lib-dynamodb";
 import type { PasswordCredential } from "@/domain/credential.js";
 import type { PasswordCredentialRepository } from "@/domain/ports.js";
-import type { UserId } from "@/domain/user-id";
+import type { UserId } from "@/domain/user/user-id";
 
 export type DynamoPasswordCredentialRepositoryOptions = {
 	tableName: string;

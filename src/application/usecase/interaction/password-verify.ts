@@ -5,7 +5,7 @@ import { validateUidMatches } from "@/adapter/validation/uid.js";
 import { parsePasswordVerifyBody } from "@/application/dto/interaction/password-verify.js";
 import { authenticateWithPassword } from "@/application/service/password-authenticate.js";
 import type { InteractionRouterContext } from "@/application/type/context.js";
-import { normalizeEmail } from "@/domain/email.js";
+import { normalizeEmail } from "@/domain/user/email.js";
 import { AppError, ErrorCodes } from "@/http/app-error.js";
 import type { RuntimeDeps } from "@/infrastructure/dependency";
 

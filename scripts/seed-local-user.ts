@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
-import { Email } from "@/domain/email.js";
+import { Email } from "@/domain/user/email.js";
 import { parseEnv } from "@/utils/env.js";
 import { hashPassword } from "../src/domain/password.js";
-import { User } from "../src/domain/user.js";
+import { User } from "../src/domain/user/user.js";
 import { createDynamoDBClientConfig } from "../src/infrastructure/dynamodb/config.js";
 import { DynamoPasswordCredentialRepository } from "../src/infrastructure/dynamodb/password-credential-repository.js";
 import { DynamoUserRepository } from "../src/infrastructure/dynamodb/user-repository.js";

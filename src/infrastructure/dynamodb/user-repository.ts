@@ -1,9 +1,9 @@
 import { DynamoDBClient, type DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, type TranslateConfig } from "@aws-sdk/lib-dynamodb";
-import { Email } from "@/domain/email.js";
 import type { UserRepository } from "@/domain/ports.js";
-import { User } from "@/domain/user.js";
-import { UserId } from "@/domain/user-id.js";
+import { Email } from "@/domain/user/email.js";
+import { User } from "@/domain/user/user.js";
+import { UserId } from "@/domain/user/user-id.js";
 
 export type DynamoUserRepositoryOptions = {
 	tableName: string;

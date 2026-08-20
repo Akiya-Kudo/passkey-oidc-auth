@@ -1,6 +1,6 @@
 import { getDummyPasswordHash, verifyPassword } from "@/domain/password.js";
 import type { PasswordCredentialRepository, UserRepository } from "@/domain/ports.js";
-import type { User } from "@/domain/user.js";
+import type { User } from "@/domain/user/user.js";
 
 export async function authenticateWithPassword(input: {
 	userRepository: UserRepository;
