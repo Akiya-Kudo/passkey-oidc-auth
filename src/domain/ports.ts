@@ -1,10 +1,11 @@
 import type { OAuthClient, OAuthClientId } from "./client.js";
 import type { PasswordCredential } from "./credential.js";
+import type { Email } from "./email.js";
 import type { User, UserId } from "./user.js";
 
 export interface UserRepository {
 	findById(id: UserId): Promise<User | null>;
-	findByEmail(email: string): Promise<User | null>;
+	findByEmail(email: Email): Promise<User | null>;
 	save(user: User): Promise<void>;
 }
 

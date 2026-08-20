@@ -2,7 +2,7 @@ import { DynamoDBClient, type DynamoDBClientConfig } from "@aws-sdk/client-dynam
 import { DynamoDBDocumentClient, GetCommand, PutCommand, type TranslateConfig } from "@aws-sdk/lib-dynamodb";
 import type { PasswordCredential } from "@/domain/credential.js";
 import type { PasswordCredentialRepository } from "@/domain/ports.js";
-import type { UserId } from "@/domain/user.js";
+import type { UserId } from "@/domain/user-id";
 
 export type DynamoPasswordCredentialRepositoryOptions = {
 	tableName: string;
@@ -19,6 +19,9 @@ export class DynamoPasswordCredentialRepository implements PasswordCredentialRep
 	readonly #tableName: string;
 	readonly #doc: DynamoDBDocumentClient;
 
+	readonly #USER_PREFIX = "USER";
+	readonly #PASSWORD_SK = "PASSWORD";
+
 	constructor(options: DynamoPasswordCredentialRepositoryOptions) {
 		this.#tableName = options.tableName;
 		this.#doc = DynamoDBDocumentClient.from(new DynamoDBClient(options.clientConfig ?? {}), {
@@ -31,7 +34,7 @@ export class DynamoPasswordCredentialRepository implements PasswordCredentialRep
 		const result = await this.#doc.send(
 			new GetCommand({
 				TableName: this.#tableName,
-				Key: { pk: `USER#${userId}`, sk: "PASSWORD" },
+				Key: { pk: `${this.#USER_PREFIX}#${userId}`, sk: this.#PASSWORD_SK },
 			}),
 		);
 		const hash = result.Item?.passwordHash;
@@ -51,8 +54,8 @@ export class DynamoPasswordCredentialRepository implements PasswordCredentialRep
 			new PutCommand({
 				TableName: this.#tableName,
 				Item: {
-					pk: `USER#${credential.userId}`,
-					sk: "PASSWORD",
+					pk: `${this.#USER_PREFIX}#${credential.userId}`,
+					sk: this.#PASSWORD_SK,
 					type: credential.type,
 					userId: credential.userId,
 					passwordHash: credential.passwordHash,

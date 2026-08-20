@@ -1,9 +1,9 @@
 import { DynamoDBClient, type DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, type TranslateConfig } from "@aws-sdk/lib-dynamodb";
-import { normalizeEmail } from "@/domain/email.js";
+import { Email } from "@/domain/email.js";
 import type { UserRepository } from "@/domain/ports.js";
-import type { User, UserId } from "@/domain/user.js";
-import { parseEmailIndexUserId, parseUserProfileItem } from "./user-item.js";
+import { User } from "@/domain/user.js";
+import { UserId } from "@/domain/user-id.js";
 
 export type DynamoUserRepositoryOptions = {
 	tableName: string;
@@ -20,10 +20,10 @@ export class DynamoUserRepository implements UserRepository {
 	readonly #tableName: string;
 	readonly #doc: DynamoDBDocumentClient;
 
-	readonly #userKeyPrefix = "USER";
-	readonly #emailKeyPrefix = "EMAIL";
-	readonly #profileKey = "PROFILE";
-	readonly #uniqueKey = "UNIQUE";
+	readonly #USER_PREFIX = "USER";
+	readonly #EMAIL_PREFIX = "EMAIL";
+	readonly #PROFILE_SK = "PROFILE";
+	readonly #UNIQUE_SK = "UNIQUE";
 
 	constructor(options: DynamoUserRepositoryOptions) {
 		this.#tableName = options.tableName;
@@ -37,30 +37,33 @@ export class DynamoUserRepository implements UserRepository {
 		const result = await this.#doc.send(
 			new GetCommand({
 				TableName: this.#tableName,
-				Key: { pk: `${this.#userKeyPrefix}#${id}`, sk: this.#profileKey },
+				Key: { pk: `${this.#USER_PREFIX}#${id}`, sk: this.#PROFILE_SK },
 			}),
 		);
 		if (!result.Item) {
 			return null;
 		}
-		return parseUserProfileItem(result.Item);
+		const user = User.from({
+			id: UserId.parse(result.Item?.id),
+			displayName: result.Item?.displayName,
+			email: result.Item?.email ? Email.from(result.Item.email) : undefined,
+			createdAt: result.Item?.createdAt,
+			updatedAt: result.Item?.updatedAt,
+		});
+		return user;
 	}
 
-	async findByEmail(email: string): Promise<User | null> {
-		const normalizedEmail = normalizeEmail(email);
-		if (!normalizedEmail) {
-			return null;
-		}
-		const index = await this.#doc.send(
+	async findByEmail(email: Email): Promise<User | null> {
+		const result = await this.#doc.send(
 			new GetCommand({
 				TableName: this.#tableName,
-				Key: { pk: `${this.#emailKeyPrefix}#${normalizedEmail}`, sk: this.#uniqueKey },
+				Key: { pk: `${this.#EMAIL_PREFIX}#${email.toString()}`, sk: this.#UNIQUE_SK },
 			}),
 		);
-		const userId = parseEmailIndexUserId(index.Item);
-		if (!userId) {
+		if (!result.Item) {
 			return null;
 		}
+		const userId = UserId.parse(result.Item?.id);
 		return this.findById(userId);
 	}
 
@@ -69,8 +72,8 @@ export class DynamoUserRepository implements UserRepository {
 			new PutCommand({
 				TableName: this.#tableName,
 				Item: {
-					pk: `USER#${user.id}`,
-					sk: "PROFILE",
+					pk: `${this.#USER_PREFIX}#${user.id}`,
+					sk: this.#PROFILE_SK,
 					id: user.id,
 					displayName: user.displayName,
 					email: user.email,
@@ -81,18 +84,17 @@ export class DynamoUserRepository implements UserRepository {
 		);
 
 		if (user.email) {
-			const normalized = normalizeEmail(user.email);
 			await this.#doc.send(
 				new PutCommand({
 					TableName: this.#tableName,
 					Item: {
-						pk: `EMAIL#${normalized}`,
-						sk: "UNIQUE",
-						userId: user.id,
+						pk: `${this.#EMAIL_PREFIX}#${user.email.toString()}`,
+						sk: this.#UNIQUE_SK,
+						id: user.id,
 					},
-					ConditionExpression: "attribute_not_exists(pk) OR userId = :userId",
+					ConditionExpression: "attribute_not_exists(pk) OR id = :id",
 					ExpressionAttributeValues: {
-						":userId": user.id,
+						":id": user.id,
 					},
 				}),
 			);

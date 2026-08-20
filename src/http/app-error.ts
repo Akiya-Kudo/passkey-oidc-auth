@@ -11,6 +11,9 @@ export const ErrorCodes = {
 	notImplemented: "not_implemented",
 	interactionContextClientNotFound: "interaction_context_client_not_found",
 	unsupportedInteractionPrompt: "unsupported_interaction_prompt",
+	invalidEmail: "invalid_email",
+	invalidUser: "invalid_user",
+	invalidUserId: "invalid_user_id",
 } as const;
 
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
