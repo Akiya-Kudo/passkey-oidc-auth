@@ -21,4 +21,12 @@ export class Email {
 		}
 		return new Email(parsed.data);
 	}
+
+	toString(): string {
+		return this.value;
+	}
+
+	toJSON(): string {
+		return this.value;
+	}
 }

@@ -1,7 +1,7 @@
 import { DynamoDBClient, type DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, type TranslateConfig } from "@aws-sdk/lib-dynamodb";
 import type { UserRepository } from "@/domain/ports.js";
-import { Email } from "@/domain/user/email.js";
+import type { Email } from "@/domain/user/email.js";
 import { User } from "@/domain/user/user.js";
 import { UserId } from "@/domain/user/user-id.js";
 
@@ -37,27 +37,20 @@ export class DynamoUserRepository implements UserRepository {
 		const result = await this.#doc.send(
 			new GetCommand({
 				TableName: this.#tableName,
-				Key: { pk: `${this.#USER_PREFIX}#${id}`, sk: this.#PROFILE_SK },
+				Key: { pk: `${this.#USER_PREFIX}#${id.value}`, sk: this.#PROFILE_SK },
 			}),
 		);
 		if (!result.Item) {
 			return null;
 		}
-		const user = User.from({
-			id: UserId.parse(result.Item?.id),
-			displayName: result.Item?.displayName,
-			email: result.Item?.email ? Email.from(result.Item.email) : undefined,
-			createdAt: result.Item?.createdAt,
-			updatedAt: result.Item?.updatedAt,
-		});
-		return user;
+		return User.parse(result.Item);
 	}
 
 	async findByEmail(email: Email): Promise<User | null> {
 		const result = await this.#doc.send(
 			new GetCommand({
 				TableName: this.#tableName,
-				Key: { pk: `${this.#EMAIL_PREFIX}#${email.toString()}`, sk: this.#UNIQUE_SK },
+				Key: { pk: `${this.#EMAIL_PREFIX}#${email.value}`, sk: this.#UNIQUE_SK },
 			}),
 		);
 		if (!result.Item) {
@@ -72,11 +65,11 @@ export class DynamoUserRepository implements UserRepository {
 			new PutCommand({
 				TableName: this.#tableName,
 				Item: {
-					pk: `${this.#USER_PREFIX}#${user.id}`,
+					pk: `${this.#USER_PREFIX}#${user.id.value}`,
 					sk: this.#PROFILE_SK,
-					id: user.id,
+					id: user.id.value,
 					displayName: user.displayName,
-					email: user.email,
+					email: user.email?.value,
 					createdAt: user.createdAt,
 					updatedAt: user.updatedAt,
 				},
@@ -88,13 +81,13 @@ export class DynamoUserRepository implements UserRepository {
 				new PutCommand({
 					TableName: this.#tableName,
 					Item: {
-						pk: `${this.#EMAIL_PREFIX}#${user.email.toString()}`,
+						pk: `${this.#EMAIL_PREFIX}#${user.email.value}`,
 						sk: this.#UNIQUE_SK,
-						id: user.id,
+						id: user.id.value,
 					},
 					ConditionExpression: "attribute_not_exists(pk) OR id = :id",
 					ExpressionAttributeValues: {
-						":id": user.id,
+						":id": user.id.value,
 					},
 				}),
 			);

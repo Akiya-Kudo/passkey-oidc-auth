@@ -33,18 +33,20 @@ export class User {
 	}
 
 	static from(props: { id: UserId; displayName?: string; email?: Email; createdAt: string; updatedAt: string }): User {
-		return User.parse(props);
+		return new User(props);
 	}
 
-	static parse(props: { id: UserId; displayName?: string; email?: Email; createdAt: string; updatedAt: string }): User {
-		const parsed = userSchema.safeParse(props);
+	static parse(item: unknown): User {
+		const parsed = userSchema.safeParse(item);
 		if (!parsed.success) {
 			throw new AppError(400, ErrorCodes.invalidUser, "Invalid user");
 		}
 		return new User({
-			...parsed.data,
 			id: UserId.from(parsed.data.id),
+			displayName: parsed.data.displayName,
 			email: parsed.data.email ? Email.from(parsed.data.email) : undefined,
+			createdAt: parsed.data.createdAt,
+			updatedAt: parsed.data.updatedAt,
 		});
 	}
 }

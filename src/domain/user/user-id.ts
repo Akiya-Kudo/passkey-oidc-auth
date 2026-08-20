@@ -25,4 +25,12 @@ export class UserId {
 	static generate(): UserId {
 		return new UserId(crypto.randomUUID());
 	}
+
+	toString(): string {
+		return this.value;
+	}
+
+	toJSON(): string {
+		return this.value;
+	}
 }

@@ -35,7 +35,7 @@ export class DynamoPasswordCredentialRepository implements PasswordCredentialRep
 		const result = await this.#doc.send(
 			new GetCommand({
 				TableName: this.#tableName,
-				Key: { pk: `${this.#USER_PREFIX}#${userId}`, sk: this.#PASSWORD_SK },
+				Key: { pk: `${this.#USER_PREFIX}#${userId.value}`, sk: this.#PASSWORD_SK },
 			}),
 		);
 		const hash = result.Item?.passwordHash;
@@ -58,10 +58,10 @@ export class DynamoPasswordCredentialRepository implements PasswordCredentialRep
 			new PutCommand({
 				TableName: this.#tableName,
 				Item: {
-					pk: `${this.#USER_PREFIX}#${credential.userId}`,
+					pk: `${this.#USER_PREFIX}#${credential.userId.value}`,
 					sk: this.#PASSWORD_SK,
 					type: credential.type,
-					userId: credential.userId,
+					userId: credential.userId.value,
 					passwordHash: credential.passwordHash,
 					algorithm: credential.algorithm,
 				},
