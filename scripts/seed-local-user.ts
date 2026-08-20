@@ -1,10 +1,11 @@
 import { randomUUID } from "node:crypto";
+import { parseEnv } from "@/utils/env.js";
 import { normalizeEmail } from "../src/domain/email.js";
 import { hashPassword } from "../src/domain/password.js";
+import { User } from "../src/domain/user.js";
 import { createDynamoDBClientConfig } from "../src/infrastructure/dynamodb/config.js";
 import { DynamoPasswordCredentialRepository } from "../src/infrastructure/dynamodb/password-credential-repository.js";
 import { DynamoUserRepository } from "../src/infrastructure/dynamodb/user-repository.js";
-import { parseEnv } from "@/utils/env.js";
 
 /**
  * Seeds a local demo user for password login.
@@ -31,13 +32,15 @@ const now = new Date().toISOString();
 const existing = await users.findByEmail(email);
 const id = existing?.id ?? userId;
 
-await users.save({
-	id,
-	email,
-	displayName,
-	createdAt: existing?.createdAt ?? now,
-	updatedAt: now,
-});
+await users.save(
+	new User({
+		id,
+		email,
+		displayName,
+		createdAt: existing?.createdAt ?? now,
+		updatedAt: now,
+	}),
+);
 
 await passwords.save({
 	type: "password",

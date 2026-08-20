@@ -11,9 +11,9 @@ export type DynamoPasswordCredentialRepositoryOptions = {
 };
 
 /**
- * Same table as User / OIDC Adapter. Item layout:
+ * Password Credential Repository
  * - pk=USER#{userId} sk=PASSWORD
- * Passkey 追加時は同じテーブルに sk=PASSKEY#{credentialId} を足す（別リポジトリ実装）。
+ * TODO: Passkey 追加時は同じテーブルに sk=PASSKEY#{credentialId} を足す（別リポジトリ実装）。
  */
 export class DynamoPasswordCredentialRepository implements PasswordCredentialRepository {
 	readonly #tableName: string;

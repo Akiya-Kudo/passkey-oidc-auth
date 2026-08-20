@@ -41,6 +41,9 @@ importers:
       serverless-http:
         specifier: ^3.2.0
         version: 3.2.0
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.2.4
@@ -1161,6 +1164,9 @@ packages:
       yaml:
         optional: true
 
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
+
 snapshots:
 
   '@aws-cdk/asset-awscli-v1@2.2.282': {}
@@ -2093,3 +2099,5 @@ snapshots:
       '@types/node': 20.19.43
       fsevents: 2.3.3
       tsx: 4.23.12
+
+  zod@4.4.3: {}

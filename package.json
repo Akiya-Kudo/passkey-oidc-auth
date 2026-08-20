@@ -28,7 +28,8 @@
 		"oidc-provider": "^9.11.3",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
-		"serverless-http": "^3.2.0"
+		"serverless-http": "^3.2.0",
+		"zod": "^4.4.3"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.4",
@@ -37,9 +38,9 @@
 		"@types/koa-mount": "^4.0.5",
 		"@types/koa__router": "^12.0.4",
 		"@types/node": "^20",
+		"@types/oidc-provider": "^9.11.1",
 		"@types/react": "^19.2.2",
 		"@types/react-dom": "^19.2.2",
-		"@types/oidc-provider": "^9.11.1",
 		"esbuild": "^0.25.9",
 		"tsx": "^4.20.5",
 		"typescript": "^5",

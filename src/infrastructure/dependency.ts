@@ -25,12 +25,12 @@ export function createRuntimeDeps(): RuntimeDeps {
 	});
 
 	const userRepository = new DynamoUserRepository({
-		tableName: Environments.oidcTableName,
+		tableName: Environments.userTableName,
 		clientConfig: dynamoConfig,
 	});
 
 	const passwordCredentialRepository = new DynamoPasswordCredentialRepository({
-		tableName: Environments.oidcTableName,
+		tableName: Environments.credentialTableName,
 		clientConfig: dynamoConfig,
 	});
 

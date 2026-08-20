@@ -3,6 +3,7 @@ import { DynamoDBDocumentClient, GetCommand, PutCommand, type TranslateConfig } 
 import { normalizeEmail } from "@/domain/email.js";
 import type { UserRepository } from "@/domain/ports.js";
 import type { User, UserId } from "@/domain/user.js";
+import { parseEmailIndexUserId, parseUserProfileItem } from "./user-item.js";
 
 export type DynamoUserRepositoryOptions = {
 	tableName: string;
@@ -10,21 +11,19 @@ export type DynamoUserRepositoryOptions = {
 	documentClientConfig?: TranslateConfig;
 };
 
-type EmailIndexItem = {
-	pk: string;
-	sk: string;
-	userId: UserId;
-};
-
 /**
- * Single-table layout (OIDC Adapter / User / Password は同じテーブル):
+ * User Repository
  * - pk=USER#{id}  sk=PROFILE  … User
  * - pk=EMAIL#{email} sk=UNIQUE … email → userId
- * - pk=USER#{id}  sk=PASSWORD … PasswordCredential（別リポジトリ実装）
  */
 export class DynamoUserRepository implements UserRepository {
 	readonly #tableName: string;
 	readonly #doc: DynamoDBDocumentClient;
+
+	readonly #userKeyPrefix = "USER";
+	readonly #emailKeyPrefix = "EMAIL";
+	readonly #profileKey = "PROFILE";
+	readonly #uniqueKey = "UNIQUE";
 
 	constructor(options: DynamoUserRepositoryOptions) {
 		this.#tableName = options.tableName;
@@ -38,27 +37,27 @@ export class DynamoUserRepository implements UserRepository {
 		const result = await this.#doc.send(
 			new GetCommand({
 				TableName: this.#tableName,
-				Key: { pk: `USER#${id}`, sk: "PROFILE" },
+				Key: { pk: `${this.#userKeyPrefix}#${id}`, sk: this.#profileKey },
 			}),
 		);
 		if (!result.Item) {
 			return null;
 		}
-		return toUser(result.Item);
+		return parseUserProfileItem(result.Item);
 	}
 
 	async findByEmail(email: string): Promise<User | null> {
-		const normalized = normalizeEmail(email);
-		if (!normalized) {
+		const normalizedEmail = normalizeEmail(email);
+		if (!normalizedEmail) {
 			return null;
 		}
 		const index = await this.#doc.send(
 			new GetCommand({
 				TableName: this.#tableName,
-				Key: { pk: `EMAIL#${normalized}`, sk: "UNIQUE" },
+				Key: { pk: `${this.#emailKeyPrefix}#${normalizedEmail}`, sk: this.#uniqueKey },
 			}),
 		);
-		const userId = (index.Item as EmailIndexItem | undefined)?.userId;
+		const userId = parseEmailIndexUserId(index.Item);
 		if (!userId) {
 			return null;
 		}
@@ -72,7 +71,11 @@ export class DynamoUserRepository implements UserRepository {
 				Item: {
 					pk: `USER#${user.id}`,
 					sk: "PROFILE",
-					...user,
+					id: user.id,
+					displayName: user.displayName,
+					email: user.email,
+					createdAt: user.createdAt,
+					updatedAt: user.updatedAt,
 				},
 			}),
 		);
@@ -95,14 +98,4 @@ export class DynamoUserRepository implements UserRepository {
 			);
 		}
 	}
-}
-
-function toUser(item: Record<string, unknown>): User {
-	return {
-		id: String(item.id),
-		displayName: typeof item.displayName === "string" ? item.displayName : undefined,
-		email: typeof item.email === "string" ? item.email : undefined,
-		createdAt: String(item.createdAt),
-		updatedAt: String(item.updatedAt),
-	};
 }
