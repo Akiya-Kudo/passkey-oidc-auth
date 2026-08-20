@@ -19,7 +19,7 @@ pnpm install
 pnpm dev
 # optional DynamoDB Local:
 docker compose up -d
-# OIDC_TABLE_NAME=passkey-oidc-local DYNAMODB_ENDPOINT=http://localhost:8000 pnpm tables:local
+# OIDC_TABLE_NAME=passkey-oidc-local LOCAL_DYNAMODB_ENDPOINT=http://localhost:8000 pnpm tables:local
 ```
 
 ## Deploy

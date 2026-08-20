@@ -26,7 +26,7 @@ export const Environments: AppEnvs = {
 	issuer: parseEnv("ISSUER", process.env.ISSUER),
 	oidcTableName: parseEnv("OIDC_TABLE_NAME", process.env.OIDC_TABLE_NAME),
 	awsRegion: parseEnv("AWS_REGION", process.env.AWS_REGION),
-	dynamodbEndpoint: parseEnv("DYNAMODB_ENDPOINT", process.env.DYNAMODB_ENDPOINT, {
+	dynamodbEndpoint: parseEnv("LOCAL_DYNAMODB_ENDPOINT", process.env.LOCAL_DYNAMODB_ENDPOINT, {
 		optional: true,
 	}),
 	jwksSecretArn: parseEnv("JWKS_SECRET_ARN", process.env.JWKS_SECRET_ARN, {
@@ -46,15 +46,15 @@ export const Environments: AppEnvs = {
 			optional: true,
 		}) === "true",
 	oidcClientId:
-		parseEnv("OIDC_CLIENT_ID", process.env.OIDC_CLIENT_ID, {
+		parseEnv("LOCAL_OIDC_CLIENT_ID", process.env.LOCAL_OIDC_CLIENT_ID, {
 			optional: true,
 		}) ?? "foo",
 	oidcClientSecret:
-		parseEnv("OIDC_CLIENT_SECRET", process.env.OIDC_CLIENT_SECRET, {
+		parseEnv("LOCAL_OIDC_CLIENT_SECRET", process.env.LOCAL_OIDC_CLIENT_SECRET, {
 			optional: true,
 		}) ?? "bar",
 	oidcRedirectUris: (
-		parseEnv("OIDC_REDIRECT_URIS", process.env.OIDC_REDIRECT_URIS, {
+		parseEnv("LOCAL_OIDC_REDIRECT_URIS", process.env.LOCAL_OIDC_REDIRECT_URIS, {
 			optional: true,
 		}) ?? "http://localhost:8080/cb"
 	).split(","),

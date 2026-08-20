@@ -1,3 +1,4 @@
+import { parseEnv } from "@/utils/env";
 import {
 	CreateTableCommand,
 	DynamoDBClient,
@@ -13,9 +14,9 @@ import {
  * Seed a demo user with: pnpm seed:local-user
  * Usage: pnpm tables:local
  */
-const endpoint = throwIfUndefined(process.env.DYNAMODB_ENDPOINT, "DYNAMODB_ENDPOINT");
-const region = throwIfUndefined(process.env.AWS_REGION, "AWS_REGION");
-const tableName = throwIfUndefined(process.env.OIDC_TABLE_NAME, "OIDC_TABLE_NAME");
+const endpoint = parseEnv("LOCAL_DYNAMODB_ENDPOINT", process.env.LOCAL_DYNAMODB_ENDPOINT);
+const region = parseEnv("AWS_REGION", process.env.AWS_REGION);
+const tableName = parseEnv("OIDC_TABLE_NAME", process.env.OIDC_TABLE_NAME);
 
 const client = new DynamoDBClient({
 	region,
@@ -82,10 +83,3 @@ async function main() {
 }
 
 await main();
-
-function throwIfUndefined<T>(value: T | undefined, name: string): T {
-	if (!value) {
-		throw new Error(`required environment variable is not set, please place .env file in the root directory ${name}`);
-	}
-	return value;
-}
