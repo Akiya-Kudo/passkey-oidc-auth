@@ -1,4 +1,4 @@
-import type { PasswordCredential } from "./credential/credential.js";
+import type { PasswordCredential } from "./credential/password/password.js";
 import type { OAuthClient, OAuthClientId } from "./oidc/client.js";
 import type { Email } from "./user/email.js";
 import type { User } from "./user/user.js";

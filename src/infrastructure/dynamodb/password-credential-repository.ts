@@ -1,6 +1,7 @@
 import { DynamoDBClient, type DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, type TranslateConfig } from "@aws-sdk/lib-dynamodb";
-import type { PasswordCredential } from "@/domain/credential/credential.js";
+import { defaultPasswordKdfName, passwordKdfNameSchema } from "@/domain/credential/password/algorithm/kdf.js";
+import { PasswordCredential } from "@/domain/credential/password/password.js";
 import type { PasswordCredentialRepository } from "@/domain/ports.js";
 import type { UserId } from "@/domain/user/user-id";
 
@@ -41,12 +42,15 @@ export class DynamoPasswordCredentialRepository implements PasswordCredentialRep
 		if (typeof hash !== "string") {
 			return null;
 		}
-		return {
-			type: "password",
+		const algorithm = passwordKdfNameSchema.safeParse(result.Item?.algorithm ?? defaultPasswordKdfName);
+		if (!algorithm.success) {
+			return null;
+		}
+		return PasswordCredential.fromHash({
 			userId,
 			passwordHash: hash,
-			algorithm: "scrypt",
-		};
+			algorithm: algorithm.data,
+		});
 	}
 
 	async save(credential: PasswordCredential): Promise<void> {

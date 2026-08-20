@@ -5,7 +5,7 @@ import { validateUidMatches } from "@/adapter/validation/uid.js";
 import { parsePasswordVerifyBody } from "@/application/dto/interaction/password-verify.js";
 import { authenticateWithPassword } from "@/application/service/password-authenticate.js";
 import type { InteractionRouterContext } from "@/application/type/context.js";
-import { normalizeEmail } from "@/domain/user/email.js";
+import { Email } from "@/domain/user/email.js";
 import { AppError, ErrorCodes } from "@/http/app-error.js";
 import type { RuntimeDeps } from "@/infrastructure/dependency";
 
@@ -30,7 +30,7 @@ export const createInteractionPasswordVerifyUseCase = (provider: Provider, deps:
 		const user = await authenticateWithPassword({
 			userRepository,
 			passwordCredentialRepository,
-			email: normalizeEmail(body.email),
+			email: Email.from(body.email),
 			password: body.password,
 		});
 		if (!user) {
@@ -44,7 +44,7 @@ export const createInteractionPasswordVerifyUseCase = (provider: Provider, deps:
 			ctx.res,
 			{
 				login: {
-					accountId: user.id,
+					accountId: user.id.value,
 					// TODO: FETUER ts amr acr などを設定する
 				},
 			},

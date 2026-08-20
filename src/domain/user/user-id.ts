@@ -19,7 +19,7 @@ export class UserId {
 		if (!parsed.success) {
 			throw new AppError(400, ErrorCodes.invalidUserId, "Invalid user ID");
 		}
-		return UserId.from(parsed.data);
+		return new UserId(parsed.data);
 	}
 
 	static generate(): UserId {
