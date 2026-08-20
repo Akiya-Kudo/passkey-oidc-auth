@@ -1,10 +1,10 @@
 import type Provider from "oidc-provider";
-import { validateClientExists } from "@/adapter/validation/client";
 import { validatePrompt } from "@/adapter/validation/prompt";
 import { validateUidMatches } from "@/adapter/validation/uid";
 import { parseConsentDetails, parseInteractionParams } from "@/application/dto/interaction/interaction";
 import type { InteractionRouterContext } from "@/application/type/context";
 import type { AuthMethod } from "@/domain/auth-method";
+import { validateClientExists } from "@/adapter/validation/client";
 
 /**
  * Interaction context Usecase
@@ -19,39 +19,37 @@ import type { AuthMethod } from "@/domain/auth-method";
  *   request's prompt query param. We only expose name for screen switching.
  * - Do not re-check session or grant here; interactionDetails already reflects that decision.
  */
-export const interactionContextUseCase = async (input: {
-	provider: Provider;
-	ctx: InteractionRouterContext;
-	authMethod: AuthMethod;
-}) => {
-	const { provider, ctx, authMethod } = input;
+export const createInteractionContextUseCase = (provider: Provider) => {
+	return async (input: { ctx: InteractionRouterContext; authMethod: AuthMethod }) => {
+		const { ctx, authMethod } = input;
 
-	const { uid, prompt, params: rawParams } = await provider.interactionDetails(ctx.req, ctx.res);
+		const { uid, prompt, params: rawParams } = await provider.interactionDetails(ctx.req, ctx.res);
 
-	// return 404 if the UID in the cookie doesn't match the UID in the path params
-	validateUidMatches(uid, ctx.params.uid);
+		// return 404 if the UID in the cookie doesn't match the UID in the path params
+		validateUidMatches(uid, ctx.params.uid);
 
-	validatePrompt(prompt.name);
+		validatePrompt(prompt.name);
 
-	const params = parseInteractionParams(rawParams);
-	const client = await provider.Client.find(params.client_id);
-	validateClientExists(client);
+		const params = parseInteractionParams(rawParams);
+		const client = await provider.Client.find(params.client_id);
+		validateClientExists(client);
 
-	// if prompt is consent, collect missingOIDCScope for the consent UI display
-	const missingScopes = prompt.name === "consent" ? (parseConsentDetails(prompt.details).missingOIDCScope ?? []) : [];
+		// if prompt is consent, collect missingOIDCScope for the consent UI display
+		const missingScopes = prompt.name === "consent" ? (parseConsentDetails(prompt.details).missingOIDCScope ?? []) : [];
 
-	// set no-store to prevent persistent caching of in-progress content
-	ctx.set("Cache-Control", "no-store");
+		// set no-store to prevent persistent caching of in-progress content
+		ctx.set("Cache-Control", "no-store");
 
-	ctx.body = {
-		uid,
-		prompt: prompt.name,
-		client: {
-			id: params.client_id,
-			name: client.clientName,
-		},
-		scopes: (params.scope ?? "").split(" ").filter(Boolean),
-		missingScopes,
-		authMethod: authMethod.toJSON(),
+		ctx.body = {
+			uid,
+			prompt: prompt.name,
+			client: {
+				id: params.client_id,
+				name: client.clientName,
+			},
+			scopes: (params.scope ?? "").split(" ").filter(Boolean),
+			missingScopes,
+			authMethod: authMethod.toJSON(),
+		};
 	};
 };
