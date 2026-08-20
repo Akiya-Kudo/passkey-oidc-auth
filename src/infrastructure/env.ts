@@ -6,6 +6,8 @@ export type AppEnvs = {
 	// AWS
 	awsRegion: string;
 	oidcTableName: string;
+	userTableName: string;
+	credentialTableName: string;
 	dynamodbEndpoint?: string; // 未設定時はAWSデフォルト
 	/** 未設定時は InMemoryKeyStore（ローカル）。デプロイ時は CDK が注入する */
 	jwksSecretArn?: string;
@@ -25,6 +27,8 @@ export const Environments: AppEnvs = {
 	env: parseEnv("NODE_ENV", process.env.NODE_ENV, { optional: true }),
 	issuer: parseEnv("ISSUER", process.env.ISSUER),
 	oidcTableName: parseEnv("OIDC_TABLE_NAME", process.env.OIDC_TABLE_NAME),
+	userTableName: parseEnv("USER_TABLE_NAME", process.env.USER_TABLE_NAME),
+	credentialTableName: parseEnv("CREDENTIAL_TABLE_NAME", process.env.CREDENTIAL_TABLE_NAME),
 	awsRegion: parseEnv("AWS_REGION", process.env.AWS_REGION),
 	dynamodbEndpoint: parseEnv("LOCAL_DYNAMODB_ENDPOINT", process.env.LOCAL_DYNAMODB_ENDPOINT, {
 		optional: true,

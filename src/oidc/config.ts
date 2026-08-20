@@ -6,7 +6,7 @@ import { OidcClients } from "./config/clients.js";
 import { OidcRoutes } from "./config/routes.js";
 import { renderOidcError } from "./error-hooks.js";
 
-export async function createConfiguration(deps: RuntimeDeps = createRuntimeDeps()): Promise<Configuration> {
+export async function createConfiguration(deps: RuntimeDeps): Promise<Configuration> {
 	const { adapter, userRepository, keyStore } = deps;
 	const clients = OidcClients;
 	const routes = OidcRoutes;
