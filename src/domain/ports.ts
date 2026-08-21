@@ -19,6 +19,14 @@ export interface PasswordCredentialRepository {
 	save(credential: PasswordCredential): Promise<void>;
 }
 
+/**
+ * Account creation must be atomic: profile, email uniqueness record, and credential
+ * are committed together or none are committed.
+ */
+export interface RegistrationRepository {
+	createPasswordAccount(input: { user: User; passwordCredential: PasswordCredential }): Promise<void>;
+}
+
 export interface ClientRepository {
 	findById(id: OAuthClientId): Promise<OAuthClient | null>;
 	save(client: OAuthClient): Promise<void>;

@@ -1,7 +1,7 @@
 import z from "zod";
 import { AppError, ErrorCodes } from "@/http/app-error";
 
-export const emailSchema = z.email();
+export const emailSchema = z.email().trim().toLowerCase().max(320);
 
 export class Email {
 	readonly value: string;

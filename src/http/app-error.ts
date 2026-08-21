@@ -8,6 +8,8 @@ export const ErrorCodes = {
 	loginNotRequired: "login_not_required",
 	unauthenticatedConsent: "unauthenticated_consent",
 	invalidCredentials: "invalid_credentials",
+	emailAlreadyRegistered: "email_already_registered",
+	registrationNotAllowed: "registration_not_allowed",
 	notImplemented: "not_implemented",
 	interactionContextClientNotFound: "interaction_context_client_not_found",
 	unsupportedInteractionPrompt: "unsupported_interaction_prompt",

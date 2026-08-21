@@ -21,6 +21,8 @@ const USER_MESSAGES: Record<string, string> = {
 	login_not_required: "この操作は現在必要ありません。",
 	unauthenticated_consent: "先にサインインしてください。",
 	invalid_credentials: "メールアドレスまたはパスワードが正しくありません。",
+	email_already_registered: "このメールアドレスはすでに登録されています。",
+	registration_not_allowed: "この操作は不正です。",
 	not_implemented: "この認証方法はまだ利用できません。",
 	invalid_interaction_url: "認証用の URL が正しくありません。",
 	interaction_context_client_not_found: "連携アプリが見つかりませんでした。",

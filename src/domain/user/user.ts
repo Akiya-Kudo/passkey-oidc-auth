@@ -3,9 +3,12 @@ import { AppError, ErrorCodes } from "@/http/app-error";
 import { Email, emailSchema } from "./email";
 import { UserId, userIdSchema } from "./user-id";
 
+export const displayNameSchema = z.string().trim().max(100);
+export const optionalDisplayNameSchema = displayNameSchema.optional().transform((value) => (value ? value : undefined));
+
 const userSchema = z.object({
 	id: userIdSchema,
-	displayName: z.string().optional(),
+	displayName: optionalDisplayNameSchema,
 	email: emailSchema.optional(),
 	createdAt: z.string().min(1),
 	updatedAt: z.string().min(1),

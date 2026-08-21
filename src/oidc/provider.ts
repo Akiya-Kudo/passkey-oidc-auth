@@ -1,5 +1,5 @@
 import { Provider } from "oidc-provider";
-import { createRuntimeDeps, type RuntimeDeps } from "@/infrastructure/dependency.js";
+import type { RuntimeDeps } from "@/infrastructure/dependency.js";
 import { Environments } from "@/infrastructure/env.js";
 import { createConfiguration } from "./config.js";
 

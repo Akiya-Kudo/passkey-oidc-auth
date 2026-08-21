@@ -1,4 +1,4 @@
-import type { Configuration } from "oidc-provider";
+import { type Configuration, interactionPolicy, errors as oidcErrors } from "oidc-provider";
 import type { RuntimeDeps } from "@/infrastructure/dependency.js";
 import { Environments } from "@/infrastructure/env.js";
 import { createFindAccount } from "./config/account.js";
@@ -10,6 +10,22 @@ export async function createConfiguration(deps: RuntimeDeps): Promise<Configurat
 	const { adapter, userRepository, keyStore } = deps;
 	const clients = OidcClients;
 	const routes = OidcRoutes;
+	const policy = interactionPolicy.base();
+	// `create` must precede `login`; otherwise an unauthenticated authorization request
+	// is sent to the login prompt before its requested account-creation prompt is checked.
+	policy.add(
+		new interactionPolicy.Prompt(
+			{ name: "create", requestable: true },
+			new interactionPolicy.Check("create_prompt_combination", "prompt=create must be used alone", (ctx) => {
+				if (ctx.oidc.prompts.has("create") && ctx.oidc.prompts.size > 1) {
+					throw new oidcErrors.InvalidRequest("prompt=create must be used alone");
+				}
+				return interactionPolicy.Check.NO_NEED_TO_PROMPT;
+			}),
+		),
+		// `create` must be the first prompt checked.
+		0,
+	);
 
 	return {
 		clients,
@@ -21,9 +37,13 @@ export async function createConfiguration(deps: RuntimeDeps): Promise<Configurat
 			introspection: { enabled: true },
 		},
 		interactions: {
+			policy,
 			url(_ctx, interaction) {
 				return `${OidcRoutes.interaction}/${interaction.uid}`;
 			},
+		},
+		discovery: {
+			prompt_values_supported: ["none", "login", "consent", "create"],
 		},
 		routes: {
 			authorization: routes.authorization,

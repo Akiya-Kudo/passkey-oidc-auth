@@ -1,8 +1,10 @@
 import Router from "@koa/router";
 import type { Provider } from "oidc-provider";
+import { createInteractionCancelRegistrationUseCase } from "@/application/usecase/interaction/cancel-registration.js";
 import { createInteractionConsentUseCase } from "@/application/usecase/interaction/concent.js";
 import { createInteractionContextUseCase } from "@/application/usecase/interaction/context";
 import { createInteractionPasswordVerifyUseCase } from "@/application/usecase/interaction/password-verify.js";
+import { createInteractionRegistrationUseCase } from "@/application/usecase/interaction/registration.js";
 import { AuthMethod } from "@/domain/oidc/auth-method.js";
 import type { RuntimeDeps } from "@/infrastructure/dependency.js";
 import { Environments } from "@/infrastructure/env.js";
@@ -17,6 +19,8 @@ export function bindCustomRoutes(provider: Provider, deps: RuntimeDeps) {
 	const interactionContext = createInteractionContextUseCase(provider);
 	const interactionPasswordVerify = createInteractionPasswordVerifyUseCase(provider, deps);
 	const interactionConsent = createInteractionConsentUseCase(provider);
+	const interactionRegistration = createInteractionRegistrationUseCase(provider, deps);
+	const interactionCancelRegistration = createInteractionCancelRegistrationUseCase(provider);
 
 	/**
 	 * Interaction context API
@@ -32,6 +36,20 @@ export function bindCustomRoutes(provider: Provider, deps: RuntimeDeps) {
 		await interactionPasswordVerify({
 			ctx,
 		});
+	});
+
+	/**
+	 * Creates a password account from a create or login Interaction.
+	 */
+	router.post("/api/interactions/:uid/register", async (ctx) => {
+		await interactionRegistration({ ctx });
+	});
+
+	/**
+	 * Ends a create Interaction when the user cancels registration.
+	 */
+	router.post("/api/interactions/:uid/register/cancel", async (ctx) => {
+		await interactionCancelRegistration({ ctx });
 	});
 
 	/**

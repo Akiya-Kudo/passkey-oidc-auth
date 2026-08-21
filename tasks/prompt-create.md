@@ -33,11 +33,11 @@ sequenceDiagram
 
 ### 1. OIDC の `create` prompt を受理する
 
-- [ ] `src/oidc/config.ts` で `interactionPolicy.base()` を取得する。
-- [ ] `new interactionPolicy.Prompt({ name: "create", requestable: true })` を policy の先頭に追加する。
+- [x] `src/oidc/config.ts` で `interactionPolicy.base()` を取得する。
+- [x] `new interactionPolicy.Prompt({ name: "create", requestable: true })` を policy の先頭に追加する。
   - `login` より後に置くと、未ログイン利用者には `login` が先に要求され、登録 UI が開かない。
-- [ ] Discovery metadata に `prompt_values_supported: ["none", "login", "consent", "create"]` を設定する。
-- [ ] `prompt=create` と他の prompt 値の併用は初期リリースではサポート対象外として、クライアント向けに単独指定を案内する。
+- [x] Discovery metadata に `prompt_values_supported: ["none", "login", "consent", "create"]` を設定する。
+- [x] `prompt=create` と他の prompt 値の併用は初期リリースではサポート対象外として、`invalid_request` で拒否する。
 
 完了条件:
 
@@ -46,11 +46,11 @@ sequenceDiagram
 
 ### 2. Interaction context と UI に create 画面を追加する
 
-- [ ] `src/adapter/validation/prompt.ts` が `"create"` を許可するようにする。
-- [ ] `apps/interaction-ui/src/types/interaction.ts` の `InteractionPrompt` に `"create"` を追加する。
-- [ ] `apps/interaction-ui/src/App.tsx` で `interaction.prompt === "create"` のとき `Registration` コンポーネントを表示する。
-- [ ] 登録画面にメールアドレス、表示名（任意）、パスワードまたは Passkey 登録の UI を実装する。
-- [ ] 登録のキャンセル時は `interactionResult({ error: "access_denied" })` で認可リクエストを終了する。
+- [x] `src/adapter/validation/prompt.ts` が `"create"` を許可するようにする。
+- [x] `apps/interaction-ui/src/types/interaction.ts` の `InteractionPrompt` に `"create"` を追加する。
+- [x] `apps/interaction-ui/src/App.tsx` で `interaction.prompt === "create"` のとき `Registration` コンポーネントを表示する。
+- [x] 登録画面にメールアドレス、表示名（任意）、password 登録の UI を実装する。
+- [x] 登録のキャンセル時は `interactionResult({ error: "access_denied" })` で認可リクエストを終了する。
 
 完了条件:
 
@@ -59,13 +59,13 @@ sequenceDiagram
 
 ### 3. 通常の login UI から登録へ進めるようにする
 
-- [ ] `Login` / `PasswordLogin` に「アカウントを作成」リンクまたはボタンを追加する。
-- [ ] クリック後は同じ Interaction の中で登録 UI に表示を切り替えるか、登録専用画面へ遷移する。
+- [x] `Login` に「アカウントを作成」リンクを追加する。
+- [x] クリック後は同じ Interaction の中で登録 UI に表示を切り替える。
   - この場合の Interaction 自体の prompt は `login` のままでよい。UI 上のモードとして `signIn` / `signUp` を持つ。
   - `prompt=create` の場合だけは最初から `signUp` モードにする。
-- [ ] ログイン失敗時に「未登録です」と断定して自動遷移しない。
+- [x] ログイン失敗時に「未登録です」と断定して自動遷移しない。
   - アカウント列挙を避けるため、認証失敗は従来どおり汎用エラーにし、利用者が明示的に登録リンクを選ぶ形にする。
-- [ ] 登録完了後は、元の Interaction が `login` でも `create` でも `login` result を返し、同一の認可リクエストを再開する。
+- [x] 登録完了後は、元の Interaction が `login` でも `create` でも `login` result を返し、同一の認可リクエストを再開する。
 
 完了条件:
 
@@ -74,15 +74,15 @@ sequenceDiagram
 
 ### 4. 登録 use case と API を実装する
 
-- [ ] `src/application/dto/interaction/registration.ts` を追加し、入力（email、displayName、password など）を検証する。
-- [ ] `src/application/usecase/interaction/registration.ts` を追加する。
+- [x] `src/application/dto/interaction/registration.ts` を追加し、入力（email、displayName、password）を検証する。
+- [x] `src/application/usecase/interaction/registration.ts` を追加する。
   - Same Origin を確認する。
   - `provider.interactionDetails()` で UID を確認する。
   - prompt が `create` または `login` であることを検証する。
   - user と credential を作成する。
   - `provider.interactionResult()` で `redirectTo` を返す。
-- [ ] `src/adapter/routes.ts` に `POST /api/interactions/:uid/register` を追加する。
-- [ ] UI API client と `Registration` コンポーネントからこの endpoint を呼ぶ。
+- [x] `src/adapter/routes.ts` に `POST /api/interactions/:uid/register` を追加する。
+- [x] UI API client と `Registration` コンポーネントからこの endpoint を呼ぶ。
 
 create Interaction を解決する結果:
 
@@ -107,14 +107,14 @@ create Interaction を解決する結果:
 
 ### 5. 永続化を登録単位で原子的にする
 
-- [ ] `UserRepository.save()` と `PasswordCredentialRepository.save()` を順番に呼ぶだけの登録処理にしない。
-- [ ] `RegistrationRepository` などの登録専用 port を追加する。
-- [ ] DynamoDB `TransactWriteItems` で、次の書き込みを一括実行する。
+- [x] `UserRepository.save()` と `PasswordCredentialRepository.save()` を順番に呼ぶだけの登録処理にしない。
+- [x] `RegistrationRepository` を追加する。
+- [x] DynamoDB `TransactWriteItems` で、次の書き込みを一括実行する。
   - User profile (`USER#{id}` / `PROFILE`)
   - Email の一意インデックス (`EMAIL#{normalizedEmail}` / `UNIQUE`、新規作成条件付き)
   - Password credential (`USER#{id}` / `PASSWORD`、新規作成条件付き)
-- [ ] 重複メールの場合は partial user / credential を残さず、登録済み用の安全なエラーを返す。
-- [ ] email は保存・検索とも同じ規則で正規化する（少なくとも trim と小文字化の方針を固定する）。
+- [x] 重複メールの場合は partial user / credential を残さず、登録済み用の安全なエラーを返す。
+- [x] email は保存・検索とも trim・小文字化で正規化する。
 
 完了条件:
 

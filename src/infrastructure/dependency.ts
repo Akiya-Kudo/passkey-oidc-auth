@@ -1,9 +1,10 @@
-import type { KeyStore, PasswordCredentialRepository, UserRepository } from "@/domain/ports.js";
+import type { KeyStore, PasswordCredentialRepository, RegistrationRepository, UserRepository } from "@/domain/ports.js";
 import { InMemoryKeyStore } from "./aws/key-store.js";
 import { SecretsManagerKeyStore } from "./aws/secrets-manager-key-store.js";
 import { createDynamoDBClientConfig } from "./dynamodb/config.js";
 import { createDynamoOidcAdapterFactory } from "./dynamodb/factory.js";
 import { DynamoPasswordCredentialRepository } from "./dynamodb/password-credential-repository.js";
+import { DynamoRegistrationRepository } from "./dynamodb/registration-repository.js";
 import { DynamoUserRepository } from "./dynamodb/user-repository.js";
 import { Environments } from "./env.js";
 
@@ -12,6 +13,7 @@ export type RuntimeDeps = {
 	keyStore: KeyStore;
 	userRepository: UserRepository;
 	passwordCredentialRepository: PasswordCredentialRepository;
+	registrationRepository: RegistrationRepository;
 };
 
 export function createRuntimeDeps(): RuntimeDeps {
@@ -33,6 +35,11 @@ export function createRuntimeDeps(): RuntimeDeps {
 		tableName: Environments.credentialTableName,
 		clientConfig: dynamoConfig,
 	});
+	const registrationRepository = new DynamoRegistrationRepository({
+		userTableName: Environments.userTableName,
+		credentialTableName: Environments.credentialTableName,
+		clientConfig: dynamoConfig,
+	});
 
 	const keyStore: KeyStore = Environments.jwksSecretArn
 		? new SecretsManagerKeyStore({
@@ -46,5 +53,6 @@ export function createRuntimeDeps(): RuntimeDeps {
 		keyStore,
 		userRepository,
 		passwordCredentialRepository,
+		registrationRepository,
 	};
 }

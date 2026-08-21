@@ -1,4 +1,4 @@
-export type InteractionPrompt = "login" | "consent";
+export type InteractionPrompt = "login" | "consent" | "create";
 
 export type AuthMethodType = "password" | "passkey";
 

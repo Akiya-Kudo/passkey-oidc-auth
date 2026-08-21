@@ -6,6 +6,8 @@ export const interactionUrls = {
 	context: (uid: string) => `${interactionBaseUrl(uid)}/context`,
 	login: (uid: string) => `${interactionBaseUrl(uid)}/login`,
 	passwordVerify: (uid: string) => `${interactionBaseUrl(uid)}/password/verify`,
+	register: (uid: string) => `${interactionBaseUrl(uid)}/register`,
+	cancelRegistration: (uid: string) => `${interactionBaseUrl(uid)}/register/cancel`,
 	confirm: (uid: string) => `${interactionBaseUrl(uid)}/confirm`,
 };
 

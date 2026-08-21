@@ -8,6 +8,8 @@ import {
 	passwordKdfNameSchema,
 } from "./algorithm/kdf.js";
 
+export const plainPasswordSchema = z.string().min(12, "password must be at least 12 characters").max(1024);
+
 export const PasswordCredentialSchema = z.object({
 	type: z.literal(CredentialType.Password.toString()),
 	userId: userIdSchema,

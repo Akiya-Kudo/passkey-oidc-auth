@@ -102,6 +102,33 @@ button:disabled {
 	cursor: progress;
 }
 
+.secondary-button {
+	margin-top: 0.75rem;
+	border: 1px solid #d9e1ef;
+	background: #fff;
+	color: #1d4ed8;
+}
+
+.account-action {
+	margin: 1.5rem 0 0;
+	color: #475569;
+	font-size: 0.9rem;
+	text-align: center;
+}
+
+.link-button {
+	width: auto;
+	margin-left: 0.25rem;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: #1d4ed8;
+	font: inherit;
+	font-weight: 700;
+	text-decoration: underline;
+}
+
 li {
 	margin-block: 0.5rem;
 }
