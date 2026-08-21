@@ -40,7 +40,6 @@ export const Environments: AppEnvs = {
 		",",
 	),
 
-	
 	localIdpPort: parseEnv("LOCAL_IDP_PORT", process.env.LOCAL_IDP_PORT, {
 		type: "number",
 		optional: true,

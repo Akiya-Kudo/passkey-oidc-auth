@@ -1,5 +1,5 @@
 import type { Configuration } from "oidc-provider";
-import { createRuntimeDeps, type RuntimeDeps } from "@/infrastructure/dependency.js";
+import type { RuntimeDeps } from "@/infrastructure/dependency.js";
 import { Environments } from "@/infrastructure/env.js";
 import { createFindAccount } from "./config/account.js";
 import { OidcClients } from "./config/clients.js";
